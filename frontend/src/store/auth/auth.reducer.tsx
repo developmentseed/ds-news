@@ -12,6 +12,8 @@ const tokenReducer = createReducer(initialState.token).handleType(
   (state, action) => action.payload
 );
 
+// TODO: Handle fetchToken.failure, fetchToken.start
+
 export default combineReducers({
   token: tokenReducer
 });

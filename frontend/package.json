@@ -23,6 +23,7 @@
     "react-scripts": "3.3.0",
     "redux": "^4.0.5",
     "redux-observable": "^1.2.0",
+    "reselect": "^4.0.0",
     "rxjs": "^6.5.4",
     "typesafe-actions": "^5.1.0",
     "typescript": "~3.7.2"

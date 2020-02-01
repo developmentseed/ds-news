@@ -11,13 +11,15 @@ const LoginComponent: React.SFC<Props> = ({
   dispatchfetchToken,
   token
 }) => {
+  // Get code from QueryString
+  // TODO: Stop using 'query-string', instead get query from router.location.query in redux
   const { code } = qs.parse(location.search);
   const authToken = Array.isArray(code) ? code[0] : code;
 
   useEffect(() => {
     if (!authToken) return;
     dispatchfetchToken(authToken);
-  }, [authToken]);
+  }, [authToken, dispatchfetchToken]);
 
   if (!code) {
     return <p className="error">No code provided. Please login.</p>;
