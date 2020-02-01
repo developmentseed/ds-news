@@ -1,24 +1,19 @@
+import { push } from "connected-react-router";
 import { of } from "rxjs";
-import { catchError, filter, map, mergeMap } from "rxjs/operators"; // tslint:disable-line
+import { catchError, filter, map, mapTo, mergeMap } from "rxjs/operators"; // tslint:disable-line
 import { isActionOf } from "typesafe-actions";
 import { RootEpic } from "../types";
 import { fetchToken } from "./auth.actions";
 
-const fetchGithubToken: RootEpic = (
-  action$,
-  state$,
-  { github, ajax, config }
-) =>
+const fetchGithubToken: RootEpic = (action$, state$, { ajax, config }) =>
   action$.pipe(
     filter(isActionOf(fetchToken.request)),
     mergeMap(({ payload }) =>
       ajax
         .post(
-          "https://github.com/login/oauth/access_token",
+          config.api.auth,
           {
-            code: payload,
-            client_id: config.gh.client_id,
-            client_secret: config.gh.client_secret // This is just for dev...
+            code: payload
           },
           {
             "Content-Type": "application/json",
@@ -26,7 +21,7 @@ const fetchGithubToken: RootEpic = (
           }
         )
         .pipe(
-          map(response => JSON.parse(response.responseText)),
+          map(response => response.response),
           map(({ access_token }: { access_token: string }) =>
             fetchToken.success(access_token)
           ),
@@ -35,4 +30,7 @@ const fetchGithubToken: RootEpic = (
     )
   );
 
-export const epics = [fetchGithubToken];
+const redirectHomeAfterLogin: RootEpic = action$ =>
+  action$.pipe(filter(isActionOf(fetchToken.success)), mapTo(push("/")));
+
+export const epics = [fetchGithubToken, redirectHomeAfterLogin];

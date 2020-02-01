@@ -7,7 +7,8 @@ import { rootReducer } from "./root-reducer";
 import { store } from "./store";
 
 export type RootStore = StateType<typeof store>;
-export type RootAction = ActionType<typeof rootActions>;
+export type RootAction = ActionType<typeof rootActions> &
+  ActionType<typeof RouterActionType>;
 export type RootState = StateType<ReturnType<typeof rootReducer>>;
 export type EpicDependencies = typeof services & { config: typeof config };
 export type RootEpic = Epic<
