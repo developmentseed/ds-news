@@ -1,0 +1,88 @@
+@import "~bootstrap/scss/bootstrap.scss";
+@import "./variables.scss";
+
+body {
+  margin: 0;
+  font-family: Roboto, -apple-system, BlinkMacSystemFont, Segoe UI, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: $font-color;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0 0 0.5em 0;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+a {
+  color: inherit;
+}
+
+nav {
+  border-bottom: 1px solid rgba(255, 62, 0, 0.1);
+  font-weight: 300;
+  padding: 0 1em;
+  padding-left: 0.75em;
+
+  img.logo {
+    max-height: 1.5em;
+    padding: 0.15em 0;
+    display: inline-block;
+  }
+
+  h1 {
+    display: inline-block;
+    margin-bottom: 0;
+    padding: 0.25em 0.5em;
+
+    font-size: 1em;
+    font-weight: 600;
+    line-height: 1.5;
+    border-right: 1px solid rgba(255, 62, 0, 0.1);
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* clearfix */
+  ul::after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+
+  li {
+    display: block;
+    float: left;
+  }
+
+  .selected {
+    position: relative;
+    display: inline-block;
+  }
+
+  .selected::after {
+    position: absolute;
+    content: "";
+    width: calc(100% - 1em);
+    height: 2px;
+    background-color: $accent-color;
+    display: block;
+    bottom: -1px;
+  }
+
+  a {
+    text-decoration: none;
+    padding: 0.25em 0.5em;
+    display: block;
+  }
+}
