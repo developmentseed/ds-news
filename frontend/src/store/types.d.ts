@@ -23,3 +23,20 @@ declare module "typesafe-actions" {
     RootAction: ActionType<typeof rootActions>;
   }
 }
+
+export type Async<Data, Error> =
+  | {
+      status: "FETCHING";
+      data: undefined;
+      error: undefined;
+    }
+  | {
+      status: "SUCCESS";
+      data: Data;
+      error: undefined;
+    }
+  | {
+      status: "FAILED";
+      data: undefined;
+      error: Error;
+    };

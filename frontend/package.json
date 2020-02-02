@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@octokit/graphql": "^4.3.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -12,6 +13,7 @@
     "@types/react-dom": "^16.9.0",
     "bootstrap": "^4.4.1",
     "connected-react-router": "^6.6.1",
+    "emoji-mart": "^2.11.2",
     "history": "^4.10.1",
     "node-sass": "^4.13.1",
     "query-string": "^6.10.1",

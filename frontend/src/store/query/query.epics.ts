@@ -1,12 +1,10 @@
-import { of } from "rxjs";
+import { from, of } from "rxjs";
 import {
+  catchError,
   debounceTime,
-  delay,
   filter,
   map,
-  mapTo,
-  switchMap,
-  tap
+  switchMap
 } from "rxjs/operators";
 import { isActionOf } from "typesafe-actions";
 import { RootEpic } from "../types";
@@ -29,18 +27,15 @@ const triggerSearchEpic: RootEpic = (action$, state$, { config }) =>
 /**
  * Execute search with Github
  */
-const executeSearchEpic: RootEpic = (action$, state$, { config }) =>
+const executeSearchEpic: RootEpic = (action$, state$, { github }) =>
   action$.pipe(
     filter(isActionOf(executeSearch.request)),
     switchMap(({ payload }) =>
-      of(payload).pipe(
-        // TODO: Put GH query logic here
-        tap(() => console.log(`Mock query of ${JSON.stringify(payload)}...`)),
-        delay(1500),
-        tap(() =>
-          console.log(`Mock completed query of ${JSON.stringify(payload)}.`)
-        ),
-        mapTo(executeSearch.success())
+      from(
+        github.query({ query: payload, token: state$.value.auth.token }).catch()
+      ).pipe(
+        map(response => executeSearch.success(response)),
+        catchError(message => of(executeSearch.failure(message)))
       )
     )
   );

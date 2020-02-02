@@ -5,7 +5,9 @@ import { fetchToken } from "./auth.actions";
 export type AuthState = Readonly<{
   token: string;
 }>;
-const initialState: AuthState = { token: "" };
+const initialState: AuthState = {
+  token: ""
+};
 
 const tokenReducer = createReducer(initialState.token).handleType(
   getType(fetchToken.success),
