@@ -1,6 +1,8 @@
 import { createStore, applyMiddleware } from "redux";
 import { createEpicMiddleware } from "redux-observable";
+import { persistStore, persistReducer, PersistConfig } from "redux-persist";
 import { createBrowserHistory } from "history";
+import storage from "redux-persist/lib/storage";
 
 import { routerMiddleware as createRouterMiddleware } from "connected-react-router";
 
@@ -32,7 +34,17 @@ const enhancer = composeEnhancers(applyMiddleware(...middlewares));
 // rehydrate state on app start
 const initialState = {};
 
-// create store
-export const store = createStore(rootReducer(history), initialState, enhancer);
+// Set persistance
+const persistConfig: PersistConfig<any> = {
+  key: "root",
+  storage,
+  whitelist: ["auth"]
+};
+const persistedReducer = persistReducer(persistConfig, rootReducer(history));
 
+// create store
+export const store = createStore(persistedReducer, initialState, enhancer);
+export const persistor = persistStore(store);
+
+// connect redux-observables
 epicMiddleware.run(rootEpic);
