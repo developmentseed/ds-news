@@ -4,10 +4,10 @@ import { store, history } from "./store/store";
 import { ConnectedRouter } from "connected-react-router";
 import { PersistGate } from "redux-persist/integration/react";
 
-import { Nav } from "./components/Nav";
+import Nav from "./components/Nav";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { Login } from "./views/Login";
-import { Main } from "./views/Main";
+import Login from "./views/Login";
+import Main from "./views/Main";
 import { persistor } from "./store/store";
 
 const App: React.FC = () => {

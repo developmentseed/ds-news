@@ -18,7 +18,7 @@ const emojis = {
   THUMBS_UP: ":+1:"
 };
 
-export const MainComponent: React.SFC<Props> = ({
+export const Main: React.SFC<Props> = ({
   search,
   outputSearch,
   searchResults,
@@ -26,8 +26,9 @@ export const MainComponent: React.SFC<Props> = ({
 }) => (
   <>
     <input
-      placeholder="Raw Search"
+      placeholder="Search"
       value={search}
+      style={{ fontFamily: "monospace", width: "100%" }}
       onChange={(e: React.FormEvent<HTMLInputElement>) =>
         dispatchSetSearch(e.currentTarget.value)
       }
@@ -38,53 +39,45 @@ export const MainComponent: React.SFC<Props> = ({
     </pre>
     {searchResults?.data && (
       <ul>
-        {searchResults.data.search.edges
-          ?.filter(({ node }) => Object.entries(node).length !== 0)
+        {searchResults.data.search.nodes
+          ?.filter(node => Object.entries(node).length !== 0)
           .map(
             (
               {
-                node: {
-                  title,
-                  number,
-                  author,
-                  createdAt,
-                  closedAt,
-                  repository,
-                  reactions,
-                  ...node
-                }
+                title,
+                number,
+                author,
+                createdAt,
+                closedAt,
+                repository,
+                reactions,
+                ...node
               },
               i
             ) => (
-              <li>
+              <li key={i}>
                 <div>
                   <a
                     href={`https://github.com/${repository?.owner.login}/${repository?.name}/issues/${number}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
                   >
                     <h6>{title}</h6>
                   </a>
 
-                  <p>
+                  <p className="mb-0">
                     <a
                       href={`https://github.com/${repository?.owner.login}/${repository?.name}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
                       className="pill"
                     >
                       {repository?.owner.login}/{repository?.name}
                     </a>{" "}
                     <a
                       href={`https://github.com/${repository?.owner.login}/${repository?.name}/issues/${number}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
                     >
                       #{number}
                     </a>
                   </p>
 
-                  <p>
+                  <p className="mb-0">
                     <a href={`https://github.com/${author?.login}`}>
                       <strong>{author?.login}</strong>
                     </a>{" "}
@@ -105,7 +98,7 @@ export const MainComponent: React.SFC<Props> = ({
                       <span key={reaction}>
                         <Emoji
                           emoji={emojis[reaction as keyof typeof emojis]}
-                          size={12}
+                          size={16}
                           tooltip
                         />
                         <sup>{count}</sup>
@@ -139,11 +132,11 @@ interface DispatchProps {
 interface OwnProps extends RouteComponentProps {}
 type Props = StateProps & DispatchProps & OwnProps;
 
-export const Main = connect<StateProps, DispatchProps, OwnProps, RootState>(
+export default connect<StateProps, DispatchProps, OwnProps, RootState>(
   ({ query: { query, results } }) => ({
     search: query.search,
     outputSearch: getQueryString(query),
     searchResults: results
   }),
   dispatch => bindActionCreators({ dispatchSetSearch: setSearch }, dispatch)
-)(MainComponent);
+)(Main);

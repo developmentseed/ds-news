@@ -5,5 +5,8 @@ export default {
   searchDebounceMs: 300,
   api: {
     auth: `${apiBase}auth`
+  },
+  paths: {
+    search: "/"
   }
 };

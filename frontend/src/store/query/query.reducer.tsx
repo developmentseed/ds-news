@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
 import { createReducer, getType } from "typesafe-actions";
-import { setSearch, executeSearch } from "./query.actions";
+import { setSearch, executeSearch, setQuery } from "./query.actions";
 import { Async } from "../types";
 import { IssuesSearchResult } from "../../services/Github";
 
@@ -22,13 +22,16 @@ const initialState: QueryState = {
   results: null
 };
 
-const queryReducer = createReducer(initialState.query).handleType(
-  getType(setSearch),
-  (state, action) => ({
+const queryReducer = createReducer(initialState.query)
+  .handleType(getType(setSearch), (state, action) => ({
     ...state,
     search: action.payload
-  })
-);
+  }))
+  .handleType(getType(setQuery), (state, action) => ({
+    ...state,
+    ...action.payload
+  }));
+
 const resultsReducer = createReducer(initialState.results)
   .handleType(getType(executeSearch.request), (state, action) => ({
     status: "FETCHING",

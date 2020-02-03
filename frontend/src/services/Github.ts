@@ -1,4 +1,3 @@
-// import ApolloClient, { gql } from "apollo-boost";
 import { graphql } from "@octokit/graphql";
 
 export class Github {
@@ -8,28 +7,26 @@ export class Github {
         query($searchQuery: String!) {
           search(query: $searchQuery, type: ISSUE, first: 100) {
             issueCount
-            edges {
-              node {
-                ... on Issue {
-                  title
-                  number
-                  repository {
-                    owner {
-                      login
-                    }
-                    name
-                  }
-                  author {
+            nodes {
+              ... on Issue {
+                title
+                number
+                repository {
+                  owner {
                     login
-                    avatarUrl
                   }
-                  createdAt
-                  closedAt
-                  reactions(first: 100) {
-                    edges {
-                      node {
-                        content
-                      }
+                  name
+                }
+                author {
+                  login
+                  avatarUrl
+                }
+                createdAt
+                closedAt
+                reactions(first: 100) {
+                  edges {
+                    node {
+                      content
                     }
                   }
                 }
@@ -154,10 +151,7 @@ export interface IssuesSearchResult {
 }
 interface Search {
   issueCount: number;
-  edges?: IssuesEdgesEntity[] | null;
-}
-interface IssuesEdgesEntity {
-  node: IssueNode;
+  nodes: IssueNode[];
 }
 interface IssueNode {
   title?: string | null;
