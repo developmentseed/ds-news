@@ -5,7 +5,7 @@ export const Nav = () => (
   <nav>
     <ul>
       <li>
-        <img className="logo" src={favicon} alt="ds news logo" />
+        <img className="logo" src="/favicon.png" alt="ds news logo" />
         <h1>ds news</h1>
       </li>
       <li>
