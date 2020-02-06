@@ -1,11 +1,12 @@
 import React from "react";
-import { setSearch } from "../store/query/query.actions";
 import { RouteComponentProps } from "react-router";
 import { connect } from "react-redux";
-import { RootState } from "../store/types";
 import { bindActionCreators } from "redux";
-import { getQueryString } from "../store/query/query.selectors";
 import { Emoji } from "emoji-mart";
+import moment from "moment";
+import { setSearch } from "../store/query/query.actions";
+import { RootState } from "../store/types";
+import { getQueryString } from "../store/query/query.selectors";
 
 const emojis = {
   CONFUSED: ":confused:",
@@ -38,7 +39,7 @@ export const Main: React.SFC<Props> = ({
       <code>{outputSearch}</code>
     </pre>
     {searchResults?.data && (
-      <ul>
+      <ol className="issues">
         {searchResults.data.search.nodes
           ?.filter(node => Object.entries(node).length !== 0)
           .map(
@@ -55,37 +56,39 @@ export const Main: React.SFC<Props> = ({
               },
               i
             ) => (
-              <li key={i}>
-                <div>
+              <li key={i} className={closedAt ? "closed" : ""}>
+                <h6 className="mb-0">
                   <a
                     href={`https://github.com/${repository?.owner.login}/${repository?.name}/issues/${number}`}
                   >
-                    <h6>{title}</h6>
+                    {title}
                   </a>
+                </h6>
 
-                  <p className="mb-0">
-                    <a
-                      href={`https://github.com/${repository?.owner.login}/${repository?.name}`}
-                      className="pill"
-                    >
-                      {repository?.owner.login}/{repository?.name}
-                    </a>{" "}
-                    <a
-                      href={`https://github.com/${repository?.owner.login}/${repository?.name}/issues/${number}`}
-                    >
-                      #{number}
-                    </a>
-                  </p>
-
-                  <p className="mb-0">
-                    <a href={`https://github.com/${author?.login}`}>
-                      <strong>{author?.login}</strong>
-                    </a>{" "}
-                    opened {createdAt} {closedAt && `(closed ${closedAt})`}
-                  </p>
-
-                  <p>
-                    {Object.entries(
+                <p>
+                  <a
+                    href={`https://github.com/${repository?.owner.login}/${repository?.name}/issues/${number}`}
+                  >
+                    <strong>{repository?.name}</strong>#{number}
+                  </a>
+                  {" by "}
+                  {/* Author */}
+                  <a href={`https://github.com/${author?.login}`}>
+                    {author?.login}
+                  </a>{" "}
+                  {/* Created */}
+                  <span title={createdAt!}>{moment(createdAt!).fromNow()}</span>
+                  {/* Closed */}
+                  {closedAt && (
+                    <em className="small" title={closedAt!}>
+                      {" "}
+                      (closed {moment(closedAt).fromNow()})
+                    </em>
+                  )}
+                  {" | "}
+                  {/* Reactions */}
+                  {reactions?.edges?.length ? (
+                    Object.entries(
                       reactions?.edges?.reduce(
                         (acc, edge) => ({
                           ...acc,
@@ -95,29 +98,37 @@ export const Main: React.SFC<Props> = ({
                         {} as Record<string, number>
                       ) || {}
                     ).map(([reaction, count]) => (
-                      <span key={reaction}>
+                      <span key={reaction} className="mr-1">
                         <Emoji
                           emoji={emojis[reaction as keyof typeof emojis]}
                           size={16}
                           tooltip
                         />
-                        <sup>{count}</sup>
+                        {count > 1 && <sup>{count}</sup>}
                       </span>
-                    ))}
-                  </p>
-
-                  {Object.entries(node).length ? (
-                    <pre>
-                      <code>{JSON.stringify(node, null, 2)}</code>
-                    </pre>
+                    ))
                   ) : (
-                    undefined
+                    <em className="small">no reactions</em>
                   )}
-                </div>
+                  {" | "}
+                  {/* <small>{Math.floor(Math.random() * 20)} comments,</small> */}
+                  <span className="mr-1">
+                    <Emoji emoji={"speech_balloon"} size={16} tooltip />
+                    {<sup>{Math.floor(Math.random() * 20)}</sup>}
+                  </span>
+                </p>
+
+                {Object.entries(node).length ? (
+                  <pre>
+                    <code>{JSON.stringify(node, null, 2)}</code>
+                  </pre>
+                ) : (
+                  undefined
+                )}
               </li>
             )
           )}
-      </ul>
+      </ol>
     )}
   </>
 );

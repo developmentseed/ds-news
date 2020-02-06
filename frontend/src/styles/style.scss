@@ -30,7 +30,7 @@ nav {
   font-weight: 300;
 
   &.navbar {
-  padding: 0 1em;
+    padding: 0 1em;
   }
 
   img.logo {
@@ -87,5 +87,62 @@ nav {
     text-decoration: none;
     padding: 0.25em 0.5em;
     display: block;
+  }
+}
+
+ol.issues {
+  padding-left: 2rem;
+
+  li {
+    border-left: 0.25em solid #fff;
+    border-bottom: 1px dashed #ddd;
+
+    $padding: 0.4rem;
+
+    margin-bottom: 0;
+    padding-top: $padding;
+    padding-bottom: $padding;
+    padding-left: 0.5rem;
+
+    &:hover {
+      background-color: #faf0f0;
+      border-left: 0.25em solid $accent-color;
+    }
+    h6 {
+      a {
+        &:visited {
+          color: #999;
+        }
+      }
+    }
+
+    p {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.closed {
+  h6 {
+    text-decoration: line-through;
+  }
+}
+
+.emoji-mart-emoji span {
+  vertical-align: text-bottom;
+}
+
+.link-button {
+  border: none;
+  color: inherit;
+  font-weight: inherit;
+  cursor: pointer;
+  display: inline;
+  margin: 0;
+  padding: 0;
+  &:hover,
+  &:focus {
+    color: $link-hover-color;
+    text-decoration: underline;
   }
 }
