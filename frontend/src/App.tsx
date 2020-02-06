@@ -14,7 +14,7 @@ const App: React.FC = () => {
   return (
     <Provider store={store}>
       <ConnectedRouter history={history}>
-        <PersistGate persistor={persistor}>
+        <PersistGate persistor={persistor} loading={<p>Loading...</p>}>
           <Router>
             <Nav />
             <Switch>
