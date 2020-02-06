@@ -19,7 +19,7 @@ const emojis = {
   THUMBS_UP: ":+1:"
 };
 
-export const Main: React.SFC<Props> = ({
+export const Feed: React.SFC<Props> = ({
   search,
   outputSearch,
   searchResults,
@@ -150,4 +150,4 @@ export default connect<StateProps, DispatchProps, OwnProps, RootState>(
     searchResults: results
   }),
   dispatch => bindActionCreators({ dispatchSetSearch: setSearch }, dispatch)
-)(Main);
+)(Feed);

@@ -7,7 +7,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import Nav from "./components/Nav";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Login from "./views/Login";
-import Main from "./views/Main";
+import Feed from "./views/Feed";
 import { persistor } from "./store/store";
 
 const App: React.FC = () => {
@@ -19,7 +19,7 @@ const App: React.FC = () => {
             <Nav />
             <Switch>
               <Route path="/login" component={Login} />
-              <Route path="/" component={Main} />
+              <Route path="/" component={Feed} />
             </Switch>
 
             {/* TODO:
