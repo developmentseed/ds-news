@@ -26,10 +26,12 @@ a {
 }
 
 nav {
-  border-bottom: 1px solid rgba(255, 62, 0, 0.1);
+  border-bottom: 1px solid #eee;
   font-weight: 300;
+
+  &.navbar {
   padding: 0 1em;
-  padding-left: 0.75em;
+  }
 
   img.logo {
     max-height: 1.5em;
@@ -80,7 +82,8 @@ nav {
     bottom: -1px;
   }
 
-  a {
+  a,
+  button {
     text-decoration: none;
     padding: 0.25em 0.5em;
     display: block;
