@@ -1,37 +1,48 @@
 import { LOCATION_CHANGE, replace } from "connected-react-router";
 import { ofType } from "redux-observable";
 import { REHYDRATE } from "redux-persist";
-import { from, of } from "rxjs";
+import { from, of, timer } from "rxjs";
 import {
   catchError,
   debounceTime,
   filter,
   map,
-  switchMap
+  repeat,
+  switchMap,
+  switchMapTo,
+  takeUntil,
+  takeWhile
 } from "rxjs/operators";
-import { isActionOf } from "typesafe-actions";
-import { RootEpic } from "../types";
-import { executeSearch, setQuery, setSearch } from "./query.actions";
-import { QueryState } from "./query.reducer";
+import { isActionOf, isOfType } from "typesafe-actions";
+import { fetchToken } from "../auth/auth.actions";
+import { RootAction, RootEpic } from "../types";
+import {
+  executeSearch,
+  setPollingTimer,
+  setQuery,
+  setSearch,
+  startPolling,
+  stopPolling
+} from "./query.actions";
 import { getQueryString } from "./query.selectors";
+import { getQueryFromUrl } from "./utils";
 
 const queryUpdateActions = [setSearch, setQuery];
 
 /**
  * When our search parameters update, update URL
  */
-const setUrl: RootEpic = (action$, state$, { config }) =>
+const setUrl: RootEpic = (action$, state$) =>
   action$.pipe(
     filter(isActionOf(queryUpdateActions)),
-    debounceTime(config.searchDebounceMs),
-    map(() => {
-      const location = state$.value.router.location;
-      const query = state$.value.query.query;
-      return replace({
-        ...location,
-        search: `q=${encodeURIComponent(getQueryString(query))}`
-      });
-    })
+    map(() =>
+      replace({
+        ...state$.value.router.location,
+        search: `q=${encodeURIComponent(
+          getQueryString(state$.value.query.query)
+        )}`
+      })
+    )
   );
 
 /**
@@ -44,64 +55,64 @@ const loadFromUrl: RootEpic = (action$, state$, { config }) =>
     filter(({ payload }) => payload.isFirstRendering),
     map(() =>
       setQuery(
-        decodeURIComponent(state$.value.router.location.search.slice(3))
-          .split(" ")
-          .map(v => v.split(":"))
-          .reduce(
-            (acc, v) => ({
-              ...acc,
-              // Anything without : will be a raw search term
-              ...(v.length === 1
-                ? {
-                    search: acc.search ? `${acc.search} ${v[0]}` : v[0]
-                  }
-                : // Put anything with a : in store under key
-                  {
-                    [v[0]]: ((acc[v[0]] as string[]) || []).concat(
-                      v.slice(1).join(":")
-                    )
-                  })
-            }),
-            {} as QueryState["query"]
-          )
+        getQueryFromUrl(state$.value.router.location.search.slice(3)) // Slice to ignore '?q='
       )
     )
   );
 
 /**
- * When our search parameters update, trigger a search to Github
+ * Trigger a search to Github in response to particular events
  */
-const triggerSearchEpic: RootEpic = (action$, state$) =>
+const triggerSearchEpic: RootEpic = (action$, state$, { config }) =>
   action$.pipe(
-    // Any update to query will trigger search
-    filter(isActionOf(queryUpdateActions)),
+    // Trigger search on...
+    filter((action: RootAction) =>
+      [
+        // ... any update to query
+        isActionOf(queryUpdateActions),
+        // ... login
+        isActionOf(fetchToken.success),
+        // ... state rehydration on page-load
+        isOfType(REHYDRATE),
+        // ... when poll counter hits 0
+        (action: RootAction) =>
+          isActionOf(setPollingTimer)(action) && action.payload === 0
+      ].some(check => check(action))
+    ),
+    // Only if user has an access token
+    filter(() => !!state$.value.auth.token),
+    // Throttle search executions
+    debounceTime(config.searchDebounceMs),
     // Execute search with computed query string
     map(() => executeSearch.request(getQueryString(state$.value.query.query)))
   );
 
-/**
- * Trigger search after rehydration. This is to catch the edge case where
- */
-const triggerSearchAfterRehydrate: RootEpic = (action$, state$, { config }) =>
+const pollQuery: RootEpic = (action$, state$) =>
   action$.pipe(
-    // Trigger on rehydration event at search URL
-    ofType(REHYDRATE),
-    filter(() => state$.value.router.location.pathname === config.paths.search),
-    // Execute search with computed query string
-    map(() => executeSearch.request(getQueryString(state$.value.query.query)))
+    filter(isActionOf(startPolling)),
+    switchMapTo(
+      timer(0, 1000).pipe(
+        // Compute diff between polling time and current counter value
+        map(val => state$.value.query.polling.interval - val),
+        takeWhile(val => val >= 0),
+        map(setPollingTimer),
+        repeat(),
+        takeUntil(action$.pipe(ofType(stopPolling)))
+      )
+    )
   );
 
 /**
  * Execute search with Github
  */
-const executeSearchEpic: RootEpic = (action$, state$, { github }) =>
+const executeSearchEpic: RootEpic = (action$, state$, { github, ajax }) =>
   action$.pipe(
     filter(isActionOf(executeSearch.request)),
-    filter(() => !!state$.value.auth.token),
+    // switchMap ensures we ignore the results of ongoing search requests
     switchMap(({ payload }) =>
       from(
         // TODO: Consider using the ajax tool to enable cancellation
-        github.query({ query: payload, token: state$.value.auth.token }).catch()
+        github.query({ query: payload, token: state$.value.auth.token })
       ).pipe(
         map(response => executeSearch.success(response)),
         catchError(message => of(executeSearch.failure(message)))
@@ -114,5 +125,5 @@ export const epics = [
   loadFromUrl,
   triggerSearchEpic,
   executeSearchEpic,
-  triggerSearchAfterRehydrate
+  pollQuery
 ];

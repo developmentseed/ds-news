@@ -11,3 +11,9 @@ export const executeSearch = createAsyncAction(
   "QUERY/SEARCH_SUCCESS",
   "QUERY/SEARCH_FAILURE"
 )<string, IssuesSearchResult, string>();
+
+export const startPolling = createAction("QUERY/START_POLLING")<number>();
+export const stopPolling = createAction("QUERY/STOP_POLLING")();
+export const setPollingTimer = createAction("QUERY/SET_POLLING_TIMER")<
+  number
+>();

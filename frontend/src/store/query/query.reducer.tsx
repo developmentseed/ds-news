@@ -1,6 +1,13 @@
 import { combineReducers } from "redux";
-import { createReducer, getType } from "typesafe-actions";
-import { setSearch, executeSearch, setQuery } from "./query.actions";
+import { createReducer } from "typesafe-actions";
+import {
+  setSearch,
+  executeSearch,
+  setQuery,
+  startPolling,
+  stopPolling,
+  setPollingTimer
+} from "./query.actions";
 import { Async } from "../types";
 import { IssuesSearchResult } from "../../services/Github";
 
@@ -10,46 +17,80 @@ export type QueryState = Readonly<{
     [term: string]: string | string[] | number | number[];
   };
   results: null | Async<IssuesSearchResult, string>;
+  polling: {
+    active: boolean;
+    count: null | number;
+    interval: number;
+  };
 }>;
 const initialState: QueryState = {
   query: {
     search: "",
-    repo: ["now", "how", "ds-business", "ds-team"].map(
-      repo => `developmentseed/${repo}`
-    ),
+    repo: [
+      "now",
+      "how",
+      "ds-business",
+      "ds-team",
+      "operations",
+      "ds-realwork",
+      "labs"
+    ].map(repo => `developmentseed/${repo}`),
     author: []
   },
-  results: null
+  results: null,
+  polling: {
+    active: false,
+    count: null,
+    interval: 15 * 60
+  }
 };
 
 const queryReducer = createReducer(initialState.query)
-  .handleType(getType(setSearch), (state, action) => ({
+  .handleAction(setSearch, (state, { payload }) => ({
     ...state,
-    search: action.payload
+    search: payload
   }))
-  .handleType(getType(setQuery), (state, action) => ({
+  .handleAction(setQuery, (state, { payload }) => ({
     ...state,
-    ...action.payload
+    ...payload
   }));
 
 const resultsReducer = createReducer(initialState.results)
-  .handleType(getType(executeSearch.request), (state, action) => ({
+  .handleAction(executeSearch.request, (state, action) => ({
     status: "FETCHING",
-    data: undefined,
+    data: state?.data,
     error: undefined
   }))
-  .handleType(getType(executeSearch.success), (state, action) => ({
+  .handleAction(executeSearch.success, (state, { payload }) => ({
     status: "SUCCESS",
-    data: action.payload,
+    data: payload,
     error: undefined
   }))
-  .handleType(getType(executeSearch.failure), (state, action) => ({
+  .handleAction(executeSearch.failure, (state, { payload }) => ({
     status: "FAILED",
     data: undefined,
-    error: action.payload
+    error: payload
+  }));
+
+const pollingReducer = createReducer(initialState.polling)
+  .handleAction(startPolling, (state, { payload }) => ({
+    ...state,
+    count: null,
+    interval: payload,
+    active: true
+  }))
+  .handleAction(stopPolling, state => ({
+    ...state,
+    count: null,
+    active: false
+  }))
+  .handleAction(setPollingTimer, (state, { payload }) => ({
+    ...state,
+    count: payload
   }));
 
 export default combineReducers({
   query: queryReducer,
-  results: resultsReducer
+  results: resultsReducer,
+  polling: pollingReducer
 });

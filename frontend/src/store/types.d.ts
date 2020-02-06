@@ -27,7 +27,7 @@ declare module "typesafe-actions" {
 export type Async<Data, Error> =
   | {
       status: "FETCHING";
-      data: undefined;
+      data: undefined | Data;
       error: undefined;
     }
   | {
