@@ -2,7 +2,7 @@ import React from "react";
 import { RouteComponentProps } from "react-router";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { setSearch } from "../../store/query/query.actions";
+import { setSearchTerm } from "../../store/query/query.actions";
 import { RootState } from "../../store/types";
 import Issue from "./Issue";
 import Sidebar from "./Sidebar";
@@ -32,7 +32,7 @@ interface StateProps {
   searchResults: RootState["query"]["results"];
 }
 interface DispatchProps {
-  dispatchSetSearch: typeof setSearch;
+  dispatchSetSearchTerm: typeof setSearchTerm;
 }
 interface OwnProps extends RouteComponentProps {}
 type Props = StateProps & DispatchProps & OwnProps;
@@ -43,5 +43,6 @@ export default connect<StateProps, DispatchProps, OwnProps, RootState>(
     polling,
     searchResults: results
   }),
-  dispatch => bindActionCreators({ dispatchSetSearch: setSearch }, dispatch)
+  dispatch =>
+    bindActionCreators({ dispatchSetSearchTerm: setSearchTerm }, dispatch)
 )(Feed);

@@ -21,14 +21,15 @@ import {
   executeSearch,
   setPollingTimer,
   setQuery,
-  setSearch,
+  setSearchTerm,
   startPolling,
   stopPolling
 } from "./query.actions";
 import { getQueryString } from "./query.selectors";
 import { getQueryFromUrl } from "./utils";
 
-const queryUpdateActions = [setSearch, setQuery];
+const queryUpdateActions = [setSearchTerm, setQuery];
+
 
 /**
  * When our search parameters update, update URL

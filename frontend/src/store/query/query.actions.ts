@@ -3,7 +3,7 @@ import { IssuesSearchResult } from "../../services/Github";
 import { QueryState } from "./query.reducer";
 
 export const setQuery = createAction("QUERY/SET")<QueryState["query"]>();
-export const setSearch = createAction("QUERY/SET_SEARCH")<string>();
+export const setSearchTerm = createAction("QUERY/SET_SEARCH_TERM")<string>();
 
 export const executeSearch = createAsyncAction(
   "QUERY/SEARCH_REQUEST",

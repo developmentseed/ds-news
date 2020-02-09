@@ -1,7 +1,7 @@
 import React from "react";
 import { getQueryString } from "../../store/query/query.selectors";
 import { RootState } from "../../store/types";
-import { setSearch } from "../../store/query/query.actions";
+import { setSearchTerm } from "../../store/query/query.actions";
 import { Circle } from "./Circle";
 
 const Close = () => (
@@ -26,7 +26,7 @@ const Close = () => (
     }}
   />
 );
-export default ({ query, polling, dispatchSetSearch }: Props) => (
+export default ({ query, polling, dispatchSetSearchTerm }: Props) => (
   <ul className="col-sm-3 list-unstyled">
     <li>
       <input
@@ -34,7 +34,7 @@ export default ({ query, polling, dispatchSetSearch }: Props) => (
         value={query.search}
         style={{ fontFamily: "monospace", width: "100%" }}
         onChange={(e: React.FormEvent<HTMLInputElement>) =>
-          dispatchSetSearch(e.currentTarget.value)
+          dispatchSetSearchTerm(e.currentTarget.value)
         }
       />
     </li>
@@ -100,5 +100,5 @@ export default ({ query, polling, dispatchSetSearch }: Props) => (
 interface Props {
   query: RootState["query"]["query"];
   polling: RootState["query"]["polling"];
-  dispatchSetSearch: typeof setSearch;
+  dispatchSetSearchTerm: typeof setSearchTerm;
 }

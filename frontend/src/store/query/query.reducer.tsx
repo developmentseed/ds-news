@@ -1,7 +1,7 @@
 import { combineReducers } from "redux";
 import { createReducer } from "typesafe-actions";
 import {
-  setSearch,
+  setSearchTerm,
   executeSearch,
   setQuery,
   startPolling,
@@ -47,7 +47,7 @@ const initialState: QueryState = {
 };
 
 const queryReducer = createReducer(initialState.query)
-  .handleAction(setSearch, (state, { payload }) => ({
+  .handleAction(setSearchTerm, (state, { payload }) => ({
     ...state,
     search: payload
   }))
