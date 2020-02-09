@@ -38,7 +38,7 @@ const initialState = {};
 const persistConfig: PersistConfig<any> = {
   key: "root",
   storage,
-  whitelist: ["auth"]
+  whitelist: ["auth", "query"]
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer(history));
 

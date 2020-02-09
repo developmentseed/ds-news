@@ -23,6 +23,10 @@ h6 {
 
 a {
   color: inherit;
+
+  &:hover {
+    color: $link-hover-color !important;
+  }
 }
 
 nav {
@@ -52,7 +56,14 @@ nav {
 
   ul {
     margin: 0;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
     padding: 0;
+  }
+
+  .filter-bar {
+    color: #999;
+    // font-weight: 500;
   }
 
   /* clearfix */
@@ -67,15 +78,10 @@ nav {
     float: left;
   }
 
-  .selected {
-    position: relative;
-    display: inline-block;
-  }
-
   .selected::after {
     position: absolute;
     content: "";
-    width: calc(100% - 1em);
+    width: calc(100% - 0em);
     height: 2px;
     background-color: $accent-color;
     display: block;
@@ -84,14 +90,31 @@ nav {
 
   a,
   button {
+    position: relative;
+    display: inline-block;
+
     text-decoration: none;
-    padding: 0.25em 0.5em;
+    margin: 0.25em 0.5em;
     display: block;
+
+    &:hover {
+      text-decoration: none !important;
+
+      &::after {
+        position: absolute;
+        content: "";
+        width: calc(100% - 0em);
+        height: 2px;
+        background-color: $accent-color;
+        display: block;
+        bottom: -1px;
+      }
+    }
   }
 }
 
 ol.issues {
-  padding-left: 2rem;
+  padding-left: 1.5rem;
 
   li {
     border-left: 0.25em solid #fff;
@@ -145,4 +168,20 @@ ol.issues {
     color: $link-hover-color;
     text-decoration: underline;
   }
+}
+
+.circle-background,
+.circle-progress {
+  fill: none;
+}
+.circle-background {
+  stroke: #ddd;
+}
+.circle-progress {
+  stroke: $accent-color;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.circle-text {
+  font-size: 0.75rem;
 }

@@ -14,6 +14,7 @@ import { IssuesSearchResult } from "../../services/Github";
 export type QueryState = Readonly<{
   query: {
     search: string;
+    repo: string[];
     [term: string]: string | string[] | number | number[];
   };
   results: null | Async<IssuesSearchResult, string>;
@@ -41,7 +42,7 @@ const initialState: QueryState = {
   polling: {
     active: false,
     count: null,
-    interval: 15 * 60
+    interval: 5 * 60
   }
 };
 
@@ -73,10 +74,8 @@ const resultsReducer = createReducer(initialState.results)
   }));
 
 const pollingReducer = createReducer(initialState.polling)
-  .handleAction(startPolling, (state, { payload }) => ({
+  .handleAction(startPolling, state => ({
     ...state,
-    count: null,
-    interval: payload,
     active: true
   }))
   .handleAction(stopPolling, state => ({

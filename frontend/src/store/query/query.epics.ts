@@ -1,19 +1,20 @@
 import { LOCATION_CHANGE, replace } from "connected-react-router";
 import { ofType } from "redux-observable";
 import { REHYDRATE } from "redux-persist";
-import { from, of, timer } from "rxjs";
+import { concat, from, of, timer } from "rxjs";
 import {
   catchError,
   debounceTime,
   filter,
   map,
+  mergeMap,
   repeat,
   switchMap,
   switchMapTo,
   takeUntil,
   takeWhile
 } from "rxjs/operators";
-import { isActionOf, isOfType } from "typesafe-actions";
+import { isActionOf } from "typesafe-actions";
 import { fetchToken } from "../auth/auth.actions";
 import { RootAction, RootEpic } from "../types";
 import {
@@ -32,9 +33,10 @@ const queryUpdateActions = [setSearch, setQuery];
 /**
  * When our search parameters update, update URL
  */
-const setUrl: RootEpic = (action$, state$) =>
+const setUrl: RootEpic = (action$, state$, { config }) =>
   action$.pipe(
     filter(isActionOf(queryUpdateActions)),
+    debounceTime(config.searchDebounceMs), // Without debounce, the app can feel sluggish when each keystroke updates the URL
     map(() =>
       replace({
         ...state$.value.router.location,
@@ -72,8 +74,6 @@ const triggerSearchEpic: RootEpic = (action$, state$, { config }) =>
         isActionOf(queryUpdateActions),
         // ... login
         isActionOf(fetchToken.success),
-        // ... state rehydration on page-load
-        isOfType(REHYDRATE),
         // ... when poll counter hits 0
         (action: RootAction) =>
           isActionOf(setPollingTimer)(action) && action.payload === 0
@@ -87,9 +87,31 @@ const triggerSearchEpic: RootEpic = (action$, state$, { config }) =>
     map(() => executeSearch.request(getQueryString(state$.value.query.query)))
   );
 
+/**
+ * When our app first hydrates on load, take action
+ */
+const rehydrationEpic: RootEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(REHYDRATE),
+    mergeMap(() =>
+      concat(
+        // Refresh our query results if we are logged in
+        of(
+          executeSearch.request(getQueryString(state$.value.query.query))
+        ).pipe(filter(() => !!state$.value.auth.token)),
+
+        // Start polling if polling is set to active and we are logged in
+        of(startPolling()).pipe(
+          filter(() => !!state$.value.query.polling.active),
+          filter(() => !!state$.value.auth.token)
+        )
+      )
+    )
+  );
+
 const pollQuery: RootEpic = (action$, state$) =>
   action$.pipe(
-    filter(isActionOf(startPolling)),
+    ofType(startPolling),
     switchMapTo(
       timer(0, 1000).pipe(
         // Compute diff between polling time and current counter value
@@ -125,5 +147,6 @@ export const epics = [
   loadFromUrl,
   triggerSearchEpic,
   executeSearchEpic,
-  pollQuery
+  pollQuery,
+  rehydrationEpic
 ];

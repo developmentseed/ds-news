@@ -30,6 +30,9 @@ export class Github {
                     }
                   }
                 }
+                comments {
+                  totalCount
+                }
               }
             }
           }
@@ -43,107 +46,6 @@ export class Github {
       }
     ) as Promise<IssuesSearchResult>;
   }
-  // async query({ query, token }: { query: string; token: string }) {
-  //   return this.client.query({
-  //     query: gql`
-  //       query($searchQuery: String!) {
-  //         search(query: $searchQuery, type: ISSUE, first: 100) {
-  //           issueCount
-  //           edges {
-  //             node {
-  //               ... on Issue {
-  //                 title
-  //                 repository {
-  //                   name
-  //                 }
-  //                 author {
-  //                   login
-  //                   avatarUrl
-  //                 }
-  //                 createdAt
-  //                 closedAt
-  //                 reactions(first: 100) {
-  //                   edges {
-  //                     node {
-  //                       content
-  //                     }
-  //                   }
-  //                 }
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-  //     `,
-  //     variables: {
-  //       searchQuery: query
-  //     },
-  //     context: {
-  //       headers: {
-  //         authorization: `Bearer ${token}`
-  //       }
-  //     }
-  //   });
-  // }
-
-  // async searchIssues({ query, token }: { query: string; token: string }) {
-  //   return this.client.query({
-  //     query: gql`
-  //       query($searchQuery: String!) {
-  //         search(query: $searchQuery, type: ISSUE, first: 100) {
-  //           issueCount
-  //           edges {
-  //             node {
-  //               ... on Issue {
-  //                 title
-  //                 repository {
-  //                   name
-  //                 }
-  //                 author {
-  //                   login
-  //                   avatarUrl
-  //                 }
-  //                 createdAt
-  //                 closedAt
-  //                 reactions(first: 100) {
-  //                   edges {
-  //                     node {
-  //                       content
-  //                     }
-  //                   }
-  //                 }
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-  //     `,
-  //     variables: {
-  //       searchQuery: query
-  //     },
-  //     context: {
-  //       headers: {
-  //         authorization: `Bearer ${token}`
-  //       }
-  //     }
-  //   });
-  // }
-
-  // async getUser({ token }: { token: string }) {
-  //   return this.client.query({
-  //     query: gql`
-  //       viewer {
-  //         login
-  //         avatarUrl
-  //       }
-  //     `,
-  //     context: {
-  //       headers: {
-  //         authorization: `Bearer ${token}`
-  //       }
-  //     }
-  //   });
-  // }
 }
 
 export interface IssuesSearchResult {
@@ -153,14 +55,17 @@ interface Search {
   issueCount: number;
   nodes: IssueNode[];
 }
-interface IssueNode {
-  title?: string | null;
-  number?: number | null;
-  repository?: Repository | null;
-  author?: Author | null;
-  createdAt?: string | null;
-  closedAt?: string | null;
-  reactions?: Reactions | null;
+export interface IssueNode {
+  title: string;
+  number: number;
+  repository: Repository;
+  author: Author;
+  createdAt: string;
+  closedAt: string;
+  reactions: Reactions;
+  comments: {
+    totalCount: number;
+  };
 }
 interface Repository {
   name: string;

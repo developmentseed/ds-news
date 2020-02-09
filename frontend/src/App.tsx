@@ -17,10 +17,12 @@ const App: React.FC = () => {
         <PersistGate persistor={persistor} loading={<p>Loading...</p>}>
           <Router>
             <Nav />
-            <Switch>
-              <Route path="/login" component={Login} />
-              <Route path="/" component={Feed} />
-            </Switch>
+            <div className="container-fluid">
+              <Switch>
+                <Route path="/login" component={Login} />
+                <Route path="/" component={Feed} />
+              </Switch>
+            </div>
 
             {/* TODO:
               - add router
