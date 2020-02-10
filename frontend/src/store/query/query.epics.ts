@@ -1,13 +1,14 @@
 import { LOCATION_CHANGE, replace } from "connected-react-router";
 import { ofType } from "redux-observable";
 import { REHYDRATE } from "redux-persist";
-import { concat, from, of, timer } from "rxjs";
+import { concat, from, merge, of, timer } from "rxjs";
 import {
   catchError,
   debounceTime,
   filter,
   map,
-  mergeMap,
+  mergeMapTo,
+  pairwise,
   repeat,
   switchMap,
   switchMapTo,
@@ -16,34 +17,34 @@ import {
 } from "rxjs/operators";
 import { isActionOf } from "typesafe-actions";
 import { fetchToken } from "../auth/auth.actions";
-import { RootAction, RootEpic } from "../types";
+import { RootAction, RootEpic, RootState } from "../types";
 import {
   executeSearch,
   setPollingTimer,
   setQuery,
-  setSearchTerm,
   startPolling,
   stopPolling
 } from "./query.actions";
 import { getQueryString } from "./query.selectors";
-import { getQueryFromUrl } from "./utils";
+import { getQueryFromString } from "./utils";
 
-const queryUpdateActions = [setSearchTerm, setQuery];
-
+const queryChanged = ([prevState, curState]: [RootState, RootState]) =>
+  JSON.stringify(prevState.query.query) !==
+  JSON.stringify(curState.query.query);
 
 /**
  * When our search parameters update, update URL
  */
 const setUrl: RootEpic = (action$, state$, { config }) =>
-  action$.pipe(
-    filter(isActionOf(queryUpdateActions)),
+  state$.pipe(
+    pairwise(),
+    filter(queryChanged),
     debounceTime(config.searchDebounceMs), // Without debounce, the app can feel sluggish when each keystroke updates the URL
-    map(() =>
+    map(([_, curState]) => curState.query.query),
+    map(query =>
       replace({
         ...state$.value.router.location,
-        search: `q=${encodeURIComponent(
-          getQueryString(state$.value.query.query)
-        )}`
+        search: `q=${encodeURIComponent(getQueryString(query))}`
       })
     )
   );
@@ -54,11 +55,11 @@ const setUrl: RootEpic = (action$, state$, { config }) =>
 const loadFromUrl: RootEpic = (action$, state$, { config }) =>
   action$.pipe(
     ofType(LOCATION_CHANGE),
-    filter(({ payload }) => payload.location.pathname === config.paths.search),
+    filter(({ payload }) => payload.location.pathname === config.paths.feed),
     filter(({ payload }) => payload.isFirstRendering),
     map(() =>
       setQuery(
-        getQueryFromUrl(state$.value.router.location.search.slice(3)) // Slice to ignore '?q='
+        getQueryFromString(state$.value.router.location.search.slice(3)) // Slice to ignore '?q='
       )
     )
   );
@@ -67,23 +68,33 @@ const loadFromUrl: RootEpic = (action$, state$, { config }) =>
  * Trigger a search to Github in response to particular events
  */
 const triggerSearchEpic: RootEpic = (action$, state$, { config }) =>
-  action$.pipe(
-    // Trigger search on...
-    filter((action: RootAction) =>
-      [
-        // ... any update to query
-        isActionOf(queryUpdateActions),
-        // ... login
-        isActionOf(fetchToken.success),
-        // ... when poll counter hits 0
-        (action: RootAction) =>
-          isActionOf(setPollingTimer)(action) && action.payload === 0
-      ].some(check => check(action))
+  // Trigger search on...
+  merge(
+    // ... actions where ...
+    action$.pipe(
+      filter((action: RootAction) =>
+        [
+          // ... login occurred
+          isActionOf(fetchToken.success),
+          // ... poll counter hits 0
+          (action: RootAction) =>
+            isActionOf(setPollingTimer)(action) && action.payload === 0
+        ].some(check => check(action))
+      )
     ),
-    // Only if user has an access token
-    filter(() => !!state$.value.auth.token),
+
+    // ... states where ....
+    state$.pipe(
+      // ...compared to last state ...
+      pairwise(),
+      // ... query has changed
+      filter(queryChanged)
+    )
+  ).pipe(
     // Throttle search executions
     debounceTime(config.searchDebounceMs),
+    // Only if user has an access token
+    filter(() => !!state$.value.auth.token),
     // Execute search with computed query string
     map(() => executeSearch.request(getQueryString(state$.value.query.query)))
   );
@@ -94,7 +105,7 @@ const triggerSearchEpic: RootEpic = (action$, state$, { config }) =>
 const rehydrationEpic: RootEpic = (action$, state$) =>
   action$.pipe(
     ofType(REHYDRATE),
-    mergeMap(() =>
+    mergeMapTo(
       concat(
         // Refresh our query results if we are logged in
         of(

@@ -1,30 +1,33 @@
 import React from "react";
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { RootState } from "../store/types";
 import { logout } from "../store/auth/auth.actions";
-import { bindActionCreators } from "redux";
+import config from "../config";
 
 export const Nav: React.SFC<Props> = ({ isLoggedIn, dispatchLogout }) => (
   <nav className="navbar">
-    <ul className="">
+    <ul>
       <li>
         <img className="logo" src="/favicon.png" alt="ds news logo" />
         <h1>ds news</h1>
       </li>
       <li>
-        <a href="/" className="selected">
+        <a className="selected" href={config.paths.feed}>
           feed
         </a>
       </li>
     </ul>
-    <ul className="">
+    <ul>
       <li>
         {isLoggedIn ? (
           <button onClick={dispatchLogout} className="link-button">
             logout
           </button>
         ) : (
-          <a href="https://github.com/login/oauth/authorize?client_id=3f43f5bebd8452ebf262&redirect_uri=http://localhost:3000/login&scope=repo&state=my+state">
+          <a
+            href={`https://github.com/login/oauth/authorize?client_id=${config.clientId}&redirect_uri=${config.domain}/${config.paths.login}&scope=repo`}
+          >
             Login with Github
           </a>
         )}

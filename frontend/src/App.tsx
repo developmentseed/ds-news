@@ -9,6 +9,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Login from "./views/Login";
 import Feed from "./views/Feed";
 import { persistor } from "./store/store";
+import config from "./config";
 
 const App: React.FC = () => {
   return (
@@ -19,8 +20,8 @@ const App: React.FC = () => {
             <Nav />
             <div className="container-fluid">
               <Switch>
-                <Route path="/login" component={Login} />
-                <Route path="/" component={Feed} />
+                <Route path={config.paths.login} component={Login} />
+                <Route path={config.paths.feed} component={Feed} />
               </Switch>
             </div>
 

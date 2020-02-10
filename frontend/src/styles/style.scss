@@ -9,6 +9,10 @@ body {
   line-height: 1.5;
   color: $font-color;
 }
+*::selection {
+  background: #333;
+  color: white;
+}
 
 h1,
 h2,
@@ -74,7 +78,7 @@ nav {
   }
 
   li {
-    display: block;
+    display: inline-block;
     float: left;
   }
 
@@ -145,6 +149,23 @@ ol.issues {
   }
 }
 
+.dropdown-menu {
+  padding: 0;
+  border-radius: 0;
+  border: 1px dotted #999;
+
+  .dropdown-item {
+    padding: 0;
+    width: inherit;
+    color: inherit;
+    font-size: 0.85rem;
+
+    &:hover {
+      background-color: inherit;
+    }
+  }
+}
+
 .closed {
   h6 {
     text-decoration: line-through;
@@ -161,7 +182,7 @@ ol.issues {
   font-weight: inherit;
   cursor: pointer;
   display: inline;
-  margin: 0;
+  // margin: 0;
   padding: 0;
   &:hover,
   &:focus {
@@ -184,4 +205,42 @@ ol.issues {
 }
 .circle-text {
   font-size: 0.75rem;
+}
+
+.close-link {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 12px;
+  height: 12px;
+  border-width: 3px;
+  border-style: solid;
+  border-radius: 100%;
+  background: -webkit-linear-gradient(
+      -45deg,
+      transparent 0%,
+      transparent 46%,
+      white 46%,
+      white 56%,
+      transparent 56%,
+      transparent 100%
+    ),
+    -webkit-linear-gradient(45deg, transparent 0%, transparent 46%, white 46%, white
+          56%, transparent 56%, transparent 100%);
+  background-color: #555;
+  border-color: #555;
+  transition: all 0.3s ease;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.sidebar {
+  h4 {
+    font-size: 0.85rem;
+    text-transform: lowercase;
+    color: #999;
+    border-bottom: 1px solid #ddd;
+    font-weight: 400;
+    margin-top: 0.5rem;
+    margin-bottom: 0.7r5em;
+  }
 }

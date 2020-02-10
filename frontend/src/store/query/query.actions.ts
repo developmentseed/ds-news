@@ -4,6 +4,9 @@ import { QueryState } from "./query.reducer";
 
 export const setQuery = createAction("QUERY/SET")<QueryState["query"]>();
 export const setSearchTerm = createAction("QUERY/SET_SEARCH_TERM")<string>();
+export const setSort = createAction("QUERY/SET_SORT")<string>();
+export const addRepo = createAction("QUERY/REPO_ADD")<string>();
+export const rmRepo = createAction("QUERY/REPO_RM")<string>();
 
 export const executeSearch = createAsyncAction(
   "QUERY/SEARCH_REQUEST",

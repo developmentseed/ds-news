@@ -1,27 +1,60 @@
 import React from "react";
+import {
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem
+} from "reactstrap";
+import { QueryState } from "../../store/query/query.reducer";
 
-export default () => (
-  <nav className="navbar">
-    <ul className="filter-bar">
-      {[
-        ["all time", undefined],
-        ["today", "created:>=TODO"],
-        ["this week", "created:>=TODO"],
-        ["this month", "created:>=TODO"],
-        ["this year", "created:>=TODO"]
-      ].map(([title, query], i) => (
-        <li key={i}>
-          {i ? <span className="m-1">{"|"}</span> : ""}
-          <button
-            className={`link-button ${title === "all time" ? "selected" : ""}`}
-          >
-            {title}
-          </button>
+export default ({ sort, setSort, searchTerm, setSearchTerm }: Props) => {
+  const sortOptions = {
+    created: "recently created",
+    updated: "recently updated",
+    interactions: "interactions",
+    "reactions-heart": "loved",
+    "reactions-tada": "celebrated",
+    reactions: "reactions",
+    "reactions-+1": "liked",
+    "reactions--1": "disliked"
+  };
+  return (
+    <nav className="navbar px-1">
+      <ul className="d-flex" style={{ flexGrow: 1 }}>
+        <li className="w-100">
+          <input
+            placeholder="Search"
+            value={searchTerm}
+            className="text-monospace w-100"
+            onChange={(e: React.FormEvent<HTMLInputElement>) =>
+              setSearchTerm(e.currentTarget.value)
+            }
+          />
         </li>
-      ))}
-    </ul>
-    <ul>
-      <li>sort by ▼</li>
-    </ul>
-  </nav>
-);
+      </ul>
+      <ul className="ml-auto">
+        <li className="ml-2">
+          <UncontrolledDropdown className="d-inline">
+            <DropdownToggle tag="a" className="link-button d-inline-block">
+              most {sortOptions[sort as keyof typeof sortOptions]} ▼
+            </DropdownToggle>{" "}
+            <DropdownMenu>
+              {Object.entries(sortOptions).map(([key, value]) => (
+                <DropdownItem key={key} onClick={() => setSort(key)}>
+                  {value}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </UncontrolledDropdown>
+        </li>
+      </ul>
+    </nav>
+  );
+};
+
+interface Props {
+  sort: QueryState["query"]["sort"];
+  setSort: (sort: string) => void;
+  searchTerm: QueryState["query"]["search"];
+  setSearchTerm: (term: string) => void;
+}

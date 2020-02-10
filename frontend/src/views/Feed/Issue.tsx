@@ -53,7 +53,7 @@ export default ({
       )}
       {" | "}
       {/* Reactions */}
-      {reactions?.edges?.length ? (
+      {reactions.edges?.length ? (
         Object.entries(
           reactions?.edges?.reduce(
             (acc, edge) => ({
@@ -63,16 +63,19 @@ export default ({
             }),
             {} as Record<string, number>
           ) || {}
-        ).map(([reaction, count]) => (
-          <span key={reaction}>
-            <Emoji
-              emoji={emojis[reaction as keyof typeof emojis]}
-              size={16}
-              tooltip
-            />
-            {count > 1 && <sup>{count}</sup>}
-          </span>
-        ))
+        )
+          .slice()
+          .sort(([r1], [r2]) => (r2 > r1 ? -1 : 1))
+          .map(([reaction, count]) => (
+            <span key={reaction}>
+              <Emoji
+                emoji={emojis[reaction as keyof typeof emojis]}
+                size={16}
+                tooltip
+              />
+              {count > 1 && <sup>{count}</sup>}
+            </span>
+          ))
       ) : (
         <em className="small">no reactions</em>
       )}
