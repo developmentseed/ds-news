@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { RootState } from "../../store/types";
-import {
-  setSearchTerm,
-  rmRepo,
-  addRepo
-} from "../../store/query/query.actions";
+import { rmRepo, addRepo } from "../../store/query/query.actions";
 
 export default ({
   query: { repo },
@@ -16,12 +12,12 @@ export default ({
   return (
     <ul className="col-sm-3 list-unstyled sidebar">
       <li className="mt-2 ">
-      <h4>status</h4>
+        <h4>last updated</h4>
         <span className="text-monospace small">
-        {results &&
-          (results.status === "FETCHING"
-            ? "loading..."
-            : `${results.asOf.toLowerCase()}`)}
+          {results &&
+            (results.status === "FETCHING"
+              ? "loading..."
+              : `${results.asOf.toLowerCase()}`)}
         </span>
       </li>
 
