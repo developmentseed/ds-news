@@ -15,7 +15,7 @@ body {
 }
 
 code {
-  color: orange;
+  color: #f40;
 }
 
 h1,
@@ -235,11 +235,16 @@ ol.issues {
     ),
     -webkit-linear-gradient(45deg, transparent 0%, transparent 46%, white 46%, white
           56%, transparent 56%, transparent 100%);
-  background-color: #555;
-  border-color: #555;
+  background-color: #999;
+  border-color: #999;
   transition: all 0.3s ease;
   vertical-align: middle;
   cursor: pointer;
+
+  &:hover {
+    border-color: #000;
+    background-color: #000;
+  }
 }
 
 .sidebar {
