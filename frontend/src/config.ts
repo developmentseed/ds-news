@@ -9,6 +9,7 @@ export default {
   clientId,
   domain,
   searchDebounceMs: 300,
+  basePath: process.env.PUBLIC_URL,
   api: {
     auth: `${apiBase}/auth`
   },

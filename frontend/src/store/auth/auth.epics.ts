@@ -30,7 +30,10 @@ const fetchGithubToken: RootEpic = (action$, state$, { ajax, config }) =>
     )
   );
 
-const redirectHomeAfterLogin: RootEpic = action$ =>
-  action$.pipe(filter(isActionOf(fetchToken.success)), mapTo(push("/")));
+const redirectHomeAfterLogin: RootEpic = (action$, state$, { config }) =>
+  action$.pipe(
+    filter(isActionOf(fetchToken.success)),
+    mapTo(push(`${config.basePath}${config.paths.feed}`))
+  );
 
 export const epics = [fetchGithubToken, redirectHomeAfterLogin];

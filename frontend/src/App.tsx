@@ -3,9 +3,9 @@ import { Provider } from "react-redux";
 import { store, history } from "./store/store";
 import { ConnectedRouter } from "connected-react-router";
 import { PersistGate } from "redux-persist/integration/react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import Nav from "./components/Nav";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Login from "./views/Login";
 import Feed from "./views/Feed";
 import { persistor } from "./store/store";
@@ -16,7 +16,7 @@ const App: React.FC = () => {
     <Provider store={store}>
       <ConnectedRouter history={history}>
         <PersistGate persistor={persistor} loading={<p>Loading...</p>}>
-          <Router>
+          <Router basename={config.basePath}>
             <Nav />
             <div className="container-fluid">
               <Switch>
@@ -24,12 +24,6 @@ const App: React.FC = () => {
                 <Route path={config.paths.feed} component={Feed} />
               </Switch>
             </div>
-
-            {/* TODO:
-              - add router
-              - create /login route to handle oauth redirect
-                - fetch & store token
-            */}
           </Router>
         </PersistGate>
       </ConnectedRouter>

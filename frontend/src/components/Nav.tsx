@@ -9,11 +9,18 @@ export const Nav: React.SFC<Props> = ({ isLoggedIn, dispatchLogout }) => (
   <nav id="header" className="navbar">
     <ul>
       <li>
-        <img className="logo" src="/favicon.png" alt="ds news logo" />
+        <img
+          className="logo"
+          src={`${process.env.PUBLIC_URL}/favicon.png`}
+          alt="ds news logo"
+        />
         <h1>ds news</h1>
       </li>
       <li>
-        <a className="selected" href={config.paths.feed}>
+        <a
+          className="selected"
+          href={`${process.env.PUBLIC_URL}${config.paths.feed}`}
+        >
           feed
         </a>
       </li>
@@ -26,7 +33,7 @@ export const Nav: React.SFC<Props> = ({ isLoggedIn, dispatchLogout }) => (
           </button>
         ) : (
           <a
-            href={`https://github.com/login/oauth/authorize?client_id=${config.clientId}&redirect_uri=${config.domain}/${config.paths.login}&scope=repo`}
+            href={`https://github.com/login/oauth/authorize?client_id=${config.clientId}&redirect_uri=${config.domain}${config.basePath}${config.paths.login}&scope=repo`}
           >
             Login with Github
           </a>
