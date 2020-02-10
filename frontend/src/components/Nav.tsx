@@ -6,7 +6,7 @@ import { logout } from "../store/auth/auth.actions";
 import config from "../config";
 
 export const Nav: React.SFC<Props> = ({ isLoggedIn, dispatchLogout }) => (
-  <nav className="navbar">
+  <nav id="header" className="navbar">
     <ul>
       <li>
         <img className="logo" src="/favicon.png" alt="ds news logo" />

@@ -14,6 +14,10 @@ body {
   color: white;
 }
 
+code {
+  color: orange;
+}
+
 h1,
 h2,
 h3,
@@ -36,6 +40,9 @@ a {
 nav {
   border-bottom: 1px solid #eee;
   font-weight: 300;
+  &#header {
+    background-color: whitesmoke;
+  }
 
   &.navbar {
     padding: 0 1em;
@@ -100,6 +107,8 @@ nav {
     text-decoration: none;
     margin: 0.25em 0.5em;
     display: block;
+
+    background-color: inherit;
 
     &:hover {
       text-decoration: none !important;
