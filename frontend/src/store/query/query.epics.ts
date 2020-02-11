@@ -70,13 +70,18 @@ const setUrl: RootEpic = (action$, state$, { config }) =>
  * When we load application, rehydrate query from URL
  */
 const loadFromUrl: RootEpic = (action$, state$, { config }) =>
-  action$.pipe(
-    ofType(LOCATION_CHANGE),
-    filter(
-      ({ payload }) =>
-        payload.location.pathname === `${config.basePath}${config.paths.feed}`
+  merge(
+    action$.pipe(
+      ofType(LOCATION_CHANGE),
+      filter(
+        ({ payload }) =>
+          payload.location.pathname === `${config.basePath}${config.paths.feed}`
+      ),
+      filter(({ payload }) => payload.isFirstRendering)
     ),
-    filter(({ payload }) => payload.isFirstRendering),
+    // Ensure that URL takes precident over hydrated state
+    action$.pipe(ofType(REHYDRATE))
+  ).pipe(
     map(() =>
       setQuery(
         getQueryFromString(state$.value.router.location.search.slice(3)) // Slice to ignore '?q='
