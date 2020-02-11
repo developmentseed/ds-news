@@ -12,6 +12,7 @@ const Login: React.SFC<Props> = ({ location, dispatchfetchToken, token }) => {
   const { code } = qs.parse(location.search);
   const authToken = Array.isArray(code) ? code[0] : code;
 
+  // TODO: Mv this logic to Redux Observables
   useEffect(() => {
     if (!authToken) return;
     dispatchfetchToken(authToken);
