@@ -7,7 +7,6 @@ import {
   debounceTime,
   filter,
   map,
-  mapTo,
   mergeMapTo,
   pairwise,
   repeat,
@@ -37,27 +36,12 @@ const queryChanged = ([prevState, curState]: [RootState, RootState]) =>
  * When our search parameters update, update URL
  */
 const setUrl: RootEpic = (action$, state$, { config }) =>
-  merge(
-    // On rehydration
-    action$.pipe(
-      ofType(REHYDRATE),
-      // ... only if no query parameter is set
-      filter(() => !state$.value.router.location.search),
-      filter(
-        () =>
-          state$.value.router.location.pathname ===
-          `${config.basePath}${config.paths.feed}`
-      ),
-      mapTo(state$.value.query.query)
-    ),
-    // On query change
-    state$.pipe(
-      pairwise(),
-      filter(queryChanged),
-      debounceTime(config.searchDebounceMs), // Without debounce, the app can feel sluggish when each keystroke updates the URL
-      map(([_, curState]) => curState.query.query)
-    )
-  ).pipe(
+  // On query change
+  state$.pipe(
+    pairwise(),
+    filter(queryChanged),
+    debounceTime(config.searchDebounceMs), // Without debounce, the app can feel sluggish when each keystroke updates the URL
+    map(([_, curState]) => curState.query.query),
     map(query =>
       replace({
         ...state$.value.router.location,
