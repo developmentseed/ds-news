@@ -38,6 +38,7 @@ const initialState: QueryState = {
       "ds-business",
       "ds-team",
       "operations",
+      "communications",
       "ds-realwork",
       "labs"
     ].map(repo => `developmentseed/${repo}`),
