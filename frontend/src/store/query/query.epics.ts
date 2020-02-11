@@ -1,4 +1,4 @@
-import { LOCATION_CHANGE, replace } from "connected-react-router";
+import { replace } from "connected-react-router";
 import { ofType } from "redux-observable";
 import { REHYDRATE } from "redux-persist";
 import { concat, from, merge, of, timer } from "rxjs";
@@ -53,19 +53,9 @@ const setUrl: RootEpic = (action$, state$, { config }) =>
 /**
  * When we load application, rehydrate query from URL
  */
-const loadFromUrl: RootEpic = (action$, state$, { config }) =>
-  merge(
-    action$.pipe(
-      ofType(LOCATION_CHANGE),
-      filter(
-        ({ payload }) =>
-          payload.location.pathname === `${config.basePath}${config.paths.feed}`
-      ),
-      filter(({ payload }) => payload.isFirstRendering)
-    ),
-    // Ensure that URL takes precident over hydrated state
-    action$.pipe(ofType(REHYDRATE))
-  ).pipe(
+const loadFromUrl: RootEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(REHYDRATE),
     map(() =>
       setQuery(
         getQueryFromString(state$.value.router.location.search.slice(3)) // Slice to ignore '?q='
