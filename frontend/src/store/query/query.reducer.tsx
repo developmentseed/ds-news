@@ -32,16 +32,7 @@ export type QueryState = Readonly<{
 const initialState: QueryState = {
   query: {
     search: "",
-    repo: [
-      "now",
-      "how",
-      "ds-business",
-      "ds-team",
-      "operations",
-      "communications",
-      "ds-realwork",
-      "labs"
-    ].map(repo => `developmentseed/${repo}`),
+    repo: [],
     sort: "created"
   },
   results: null,
@@ -58,7 +49,7 @@ const queryReducer = createReducer(initialState.query)
     search: payload
   }))
   .handleAction(setQuery, (state, { payload }) => ({
-    ...state,
+    ...initialState.query,
     ...payload
   }))
   .handleAction(setSort, (state, { payload }) => ({
