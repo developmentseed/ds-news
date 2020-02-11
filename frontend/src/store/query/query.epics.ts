@@ -39,7 +39,17 @@ const queryChanged = ([prevState, curState]: [RootState, RootState]) =>
 const setUrl: RootEpic = (action$, state$, { config }) =>
   merge(
     // On rehydration
-    action$.pipe(ofType(REHYDRATE), mapTo(state$.value.query.query)),
+    action$.pipe(
+      ofType(REHYDRATE),
+      // ... only if no query parameter is set
+      filter(() => !state$.value.router.location.search),
+      filter(
+        () =>
+          state$.value.router.location.pathname ===
+          `${config.basePath}${config.paths.feed}`
+      ),
+      mapTo(state$.value.query.query)
+    ),
     // On query change
     state$.pipe(
       pairwise(),
@@ -62,7 +72,10 @@ const setUrl: RootEpic = (action$, state$, { config }) =>
 const loadFromUrl: RootEpic = (action$, state$, { config }) =>
   action$.pipe(
     ofType(LOCATION_CHANGE),
-    filter(({ payload }) => payload.location.pathname === config.paths.feed),
+    filter(
+      ({ payload }) =>
+        payload.location.pathname === `${config.basePath}${config.paths.feed}`
+    ),
     filter(({ payload }) => payload.isFirstRendering),
     map(() =>
       setQuery(
