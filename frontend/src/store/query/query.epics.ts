@@ -17,7 +17,7 @@ import {
 } from "rxjs/operators";
 import { isActionOf } from "typesafe-actions";
 import { fetchToken } from "../auth/auth.actions";
-import { RootAction, RootEpic, RootState } from "../types";
+import { RootEpic, RootState } from "../types";
 import {
   executeSearch,
   setPollingTimer,
@@ -69,31 +69,22 @@ const loadFromUrl: RootEpic = (action$, state$) =>
 const triggerSearchEpic: RootEpic = (action$, state$, { config }) =>
   // Trigger search on...
   merge(
-    // ... actions where ...
+    // ... actions where login occurred
+    action$.pipe(filter(isActionOf(fetchToken.success))),
+
+    // ... actions where poll counter hits 0
     action$.pipe(
-      filter((action: RootAction) =>
-        [
-          // ... login occurred
-          isActionOf(fetchToken.success),
-          // ... poll counter hits 0
-          (action: RootAction) =>
-            isActionOf(setPollingTimer)(action) && action.payload === 0
-        ].some(check => check(action))
-      )
+      filter(isActionOf(setPollingTimer)),
+      filter(({ payload }) => payload === 0)
     ),
 
-    // ... states where ....
-    state$.pipe(
-      // ...compared to last state ...
-      pairwise(),
-      // ... query has changed
-      filter(queryChanged)
-    )
+    // ... states where compared to last state query has changed
+    state$.pipe(pairwise(), filter(queryChanged))
   ).pipe(
-    // Throttle search executions
-    debounceTime(config.searchDebounceMs),
     // Only if user has an access token
     filter(() => !!state$.value.auth.token),
+    // Throttle search executions
+    debounceTime(config.searchDebounceMs),
     // Execute search with computed query string
     map(() => executeSearch.request(getQueryString(state$.value.query.query)))
   );
