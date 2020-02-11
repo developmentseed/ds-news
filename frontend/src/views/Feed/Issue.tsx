@@ -96,9 +96,11 @@ export default ({
         {comments.totalCount ? (
           <>
             <Emoji emoji={"speech_balloon"} size={16} tooltip />
-            <sup>
-              {comments.totalCount === 100 ? "100+" : comments.totalCount}
-            </sup>
+            {comments.totalCount > 1 && (
+              <sup>
+                {comments.totalCount === 100 ? "100+" : comments.totalCount}
+              </sup>
+            )}
           </>
         ) : (
           <em className="small">no comments</em>
