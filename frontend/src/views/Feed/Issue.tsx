@@ -41,7 +41,19 @@ export default ({
       </a>
       {" by "}
       {/* Author */}
-      <a href={`https://github.com/${author?.login}`}>{author?.login}</a>{" "}
+      <a href={`https://github.com/${author?.login}`}>
+        <img
+          src={author?.avatarUrl}
+          alt={`${author?.login} profile pic`}
+          className="mr-1"
+          style={{
+            maxHeight: "1rem",
+            borderRadius: 2,
+            verticalAlign: "text-top"
+          }}
+        />
+        {author?.login}
+      </a>{" "}
       {/* Created */}
       <span title={createdAt!}>{moment(createdAt!).fromNow()}</span>
       {/* Closed */}
