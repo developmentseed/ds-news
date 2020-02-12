@@ -1,7 +1,7 @@
 import { replace } from "connected-react-router";
 import { ofType } from "redux-observable";
 import { REHYDRATE } from "redux-persist";
-import { concat, from, merge, of, timer } from "rxjs";
+import { concat, from, merge, of, throwError, timer } from "rxjs";
 import {
   catchError,
   debounceTime,
@@ -38,6 +38,11 @@ const queryChanged = ([prevState, curState]: [RootState, RootState]) =>
 const setUrl: RootEpic = (action$, state$, { config }) =>
   // On query change
   state$.pipe(
+    filter(
+      () =>
+        state$.value.router.location.pathname ===
+        `${config.basePath}${config.paths.feed}`
+    ),
     pairwise(),
     filter(queryChanged),
     debounceTime(config.searchDebounceMs), // Without debounce, the app can feel sluggish when each keystroke updates the URL
@@ -53,9 +58,14 @@ const setUrl: RootEpic = (action$, state$, { config }) =>
 /**
  * When we load application, rehydrate query from URL
  */
-const loadFromUrl: RootEpic = (action$, state$) =>
+const loadFromUrl: RootEpic = (action$, state$, { config }) =>
   action$.pipe(
     ofType(REHYDRATE),
+    filter(
+      () =>
+        state$.value.router.location.pathname ===
+        `${config.basePath}${config.paths.feed}`
+    ),
     map(() =>
       setQuery(
         getQueryFromString(state$.value.router.location.search.slice(3)) // Slice to ignore '?q='
@@ -82,7 +92,7 @@ const triggerSearchEpic: RootEpic = (action$, state$, { config }) =>
     state$.pipe(pairwise(), filter(queryChanged))
   ).pipe(
     // Only if user has an access token
-    filter(() => !!state$.value.auth.token),
+    filter(() => !!state$.value.auth.token?.data),
     // Throttle search executions
     debounceTime(config.searchDebounceMs),
     // Execute search with computed query string
@@ -100,12 +110,12 @@ const rehydrationEpic: RootEpic = (action$, state$) =>
         // Refresh our query results if we are logged in
         of(
           executeSearch.request(getQueryString(state$.value.query.query))
-        ).pipe(filter(() => !!state$.value.auth.token)),
+        ).pipe(filter(() => !!state$.value.auth.token?.data)),
 
         // Start polling if polling is set to active and we are logged in
         of(startPolling()).pipe(
           filter(() => !!state$.value.query.polling.active),
-          filter(() => !!state$.value.auth.token)
+          filter(() => !!state$.value.auth.token?.data)
         )
       )
     )
@@ -134,9 +144,15 @@ const executeSearchEpic: RootEpic = (action$, state$, { github, ajax }) =>
     filter(isActionOf(executeSearch.request)),
     // switchMap ensures we ignore the results of ongoing search requests
     switchMap(({ payload }) =>
-      from(
-        // TODO: Consider using the ajax tool to enable cancellation
-        github.query({ query: payload, token: state$.value.auth.token })
+      (state$.value.auth.token?.data
+        ? from(
+            // TODO: Consider using the ajax tool to enable cancellation
+            github.query({
+              query: payload,
+              token: state$.value.auth.token.data
+            })
+          )
+        : throwError("You must be logged in to query Github")
       ).pipe(
         map(response => executeSearch.success(response)),
         catchError(message => of(executeSearch.failure(message)))

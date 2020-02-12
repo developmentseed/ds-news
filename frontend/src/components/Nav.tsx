@@ -53,6 +53,6 @@ interface OwnProps {}
 type Props = StateProps & DispatchProps & OwnProps;
 
 export default connect<StateProps, DispatchProps, OwnProps, RootState>(
-  ({ auth }) => ({ isLoggedIn: !!auth.token }),
+  ({ auth }) => ({ isLoggedIn: !!auth.token?.data }),
   dispatch => bindActionCreators({ dispatchLogout: logout }, dispatch)
 )(Nav);

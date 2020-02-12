@@ -1,6 +1,13 @@
 import { push } from "connected-react-router";
-import { of } from "rxjs";
-import { catchError, filter, map, mapTo, mergeMap } from "rxjs/operators"; // tslint:disable-line
+import { of, throwError } from "rxjs";
+import {
+  catchError,
+  filter,
+  map,
+  mapTo,
+  mergeMap,
+  switchMap
+} from "rxjs/operators"; // tslint:disable-line
 import { isActionOf } from "typesafe-actions";
 import { RootEpic } from "../types";
 import { fetchToken } from "./auth.actions";
@@ -8,7 +15,7 @@ import { fetchToken } from "./auth.actions";
 const fetchGithubToken: RootEpic = (action$, state$, { ajax, config }) =>
   action$.pipe(
     filter(isActionOf(fetchToken.request)),
-    mergeMap(({ payload }) =>
+    switchMap(({ payload }) =>
       ajax
         .post(
           config.api.auth,
@@ -22,9 +29,14 @@ const fetchGithubToken: RootEpic = (action$, state$, { ajax, config }) =>
         )
         .pipe(
           map(response => response.response),
-          map(({ access_token }: { access_token: string }) =>
-            fetchToken.success(access_token)
+          mergeMap(response =>
+            response.error
+              ? throwError(response.error_description.split("+").join(" "))
+              : of(response)
           ),
+          map(({ access_token }: { access_token: string }) => {
+            fetchToken.success(access_token);
+          }),
           catchError(message => of(fetchToken.failure(message)))
         )
     )

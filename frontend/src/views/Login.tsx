@@ -5,6 +5,7 @@ import { fetchToken } from "../store/auth/auth.actions";
 import { connect } from "react-redux";
 import { RootState } from "../store/types";
 import { bindActionCreators } from "redux";
+import { AuthState } from "../store/auth/auth.reducer";
 
 const Login: React.SFC<Props> = ({ location, dispatchfetchToken, token }) => {
   // Get code from QueryString
@@ -21,14 +22,17 @@ const Login: React.SFC<Props> = ({ location, dispatchfetchToken, token }) => {
   if (!code) {
     return <p className="error">No code provided. Please login.</p>;
   }
-  if (token) {
-    return <Redirect to="/" />;
-  }
-  return <p>Fetching auth token... {token}</p>;
+  return token?.status === "FETCHING" ? (
+    <p>Fetching auth token...</p>
+  ) : token?.status === "FAILED" ? (
+    <p className="error">{token.error}</p>
+  ) : (
+    <p>Successfully retrieved token</p>
+  );
 };
 
 interface StateProps {
-  token: string;
+  token: AuthState["token"];
 }
 interface DispatchProps {
   dispatchfetchToken: typeof fetchToken.request;
