@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "6afe9db8891a2443e684d7a9c23a55b9",
+    "revision": "8ad05ac9f35622df3d25c2e93d1742aa",
     "url": "/ds-news/index.html"
   },
   {
-    "revision": "fa9a1a6c4216ccd30a9f",
+    "revision": "919a4a1ccff2fba5469f",
     "url": "/ds-news/static/css/main.7c81ca9b.chunk.css"
   },
   {
-    "revision": "f4259272cc863162b4cd",
-    "url": "/ds-news/static/js/2.418837b4.chunk.js"
+    "revision": "6f5ba711e3eb16e8bf56",
+    "url": "/ds-news/static/js/2.d77803cb.chunk.js"
   },
   {
     "revision": "a988fa69c5e58f2376c92f812dbc255b",
-    "url": "/ds-news/static/js/2.418837b4.chunk.js.LICENSE"
+    "url": "/ds-news/static/js/2.d77803cb.chunk.js.LICENSE"
   },
   {
-    "revision": "fa9a1a6c4216ccd30a9f",
-    "url": "/ds-news/static/js/main.e39b7180.chunk.js"
+    "revision": "919a4a1ccff2fba5469f",
+    "url": "/ds-news/static/js/main.c4f2bbc4.chunk.js"
   },
   {
     "revision": "6c7951878a2d18b2ee5b",
