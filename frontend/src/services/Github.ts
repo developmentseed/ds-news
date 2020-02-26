@@ -1,8 +1,8 @@
 import { graphql } from "@octokit/graphql";
 
 export class Github {
-  async query({ query, token }: { query: string; token: string }) {
-    return graphql(
+  query = ({ query, token }: { query: string; token: string }) =>
+    graphql(
       `
         query($searchQuery: String!) {
           search(query: $searchQuery, type: ISSUE, first: 100) {
@@ -45,7 +45,6 @@ export class Github {
         }
       }
     ) as Promise<IssuesSearchResult>;
-  }
 }
 
 export interface IssuesSearchResult {
