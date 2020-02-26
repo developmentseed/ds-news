@@ -6,7 +6,7 @@ import { ApiStack } from "./lib/api-stack";
 
 config();
 
-const name = "DSNews";
+const name = "ds-news";
 const app = new cdk.App();
 
 const ghClientId = process.env.GH_CLIENT_ID;
