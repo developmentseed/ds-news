@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import { RootState } from "../store/types";
 import { bindActionCreators } from "redux";
 import { AuthState } from "../store/auth/auth.reducer";
+import config from "../config";
 
 const Login: React.SFC<Props> = ({ location, dispatchfetchToken, token }) => {
   // Get code from QueryString
@@ -27,7 +28,8 @@ const Login: React.SFC<Props> = ({ location, dispatchfetchToken, token }) => {
   ) : token?.status === "FAILED" ? (
     <p className="error">{token.error}</p>
   ) : (
-    <p>Successfully retrieved token</p>
+    // TODO: Redirect to URL that contains original query state
+    <Redirect to={config.paths.feed} />
   );
 };
 
