@@ -15,9 +15,8 @@ import {
   takeUntil,
   takeWhile
 } from "rxjs/operators";
-import { isActionOf } from "typesafe-actions";
+import { isActionOf, RootEpic, RootState } from "typesafe-actions";
 import { fetchToken } from "../auth/auth.actions";
-import { RootEpic, RootState } from "../types";
 import {
   executeSearch,
   setPollingTimer,
@@ -123,7 +122,7 @@ const rehydrationEpic: RootEpic = (action$, state$) =>
 
 const pollQuery: RootEpic = (action$, state$) =>
   action$.pipe(
-    ofType(startPolling),
+    filter(isActionOf(startPolling)),
     switchMapTo(
       timer(0, 1000).pipe(
         // Compute diff between polling time and current counter value
@@ -145,20 +144,19 @@ const executeSearchEpic: RootEpic = (action$, state$, { github, ajax }) =>
     // switchMap ensures we ignore the results of ongoing search requests
     switchMap(({ payload }) =>
       state$.value.auth.token?.data
-        ? // TODO: Consider using the ajax tool to enable cancellation
-          from(
+        ? from(
             github.query({
               query: payload,
               token: state$.value.auth.token.data
             })
-      ).pipe(
-        map(response => executeSearch.success(response)),
+          ).pipe(
+            map(response => executeSearch.success(response)),
             catchError(err =>
               of(
                 executeSearch.failure(`Failed to query Github: ${err.message}`)
               )
             )
-      )
+          )
         : of(executeSearch.failure("You must be logged in to query Github"))
     )
   );

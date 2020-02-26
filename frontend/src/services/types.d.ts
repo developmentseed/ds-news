@@ -1,2 +1,6 @@
+import {} from "typesafe-actions";
 import { services } from "./index";
-export type Services = typeof services;
+
+declare module "typesafe-actions" {
+  export type Services = typeof services;
+}

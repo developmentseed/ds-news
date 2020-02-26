@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { RouteComponentProps, Redirect } from "react-router";
 import qs from "query-string";
+import { RootState } from "typesafe-actions";
 import { fetchToken } from "../store/auth/auth.actions";
 import { connect } from "react-redux";
-import { RootState } from "../store/types";
 import { bindActionCreators } from "redux";
 import { AuthState } from "../store/auth/auth.reducer";
 import config from "../config";

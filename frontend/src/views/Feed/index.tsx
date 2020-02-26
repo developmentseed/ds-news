@@ -8,11 +8,11 @@ import {
   addRepo,
   rmRepo
 } from "../../store/query/query.actions";
-import { RootState } from "../../store/types";
 import Issue from "./Issue";
 import Sidebar from "./Sidebar";
 import NavFilter from "./NavFilter";
 import { getQueryString } from "../../store/query/query.selectors";
+import { RootState } from "typesafe-actions";
 
 export const Feed: React.SFC<Props> = ({
   results,

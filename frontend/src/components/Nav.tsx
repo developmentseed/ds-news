@@ -1,7 +1,7 @@
 import React from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { RootState } from "../store/types";
+import { RootState } from "typesafe-actions";
 import { logout } from "../store/auth/auth.actions";
 import config from "../config";
 

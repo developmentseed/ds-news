@@ -10,8 +10,7 @@ import { composeEnhancers } from "./utils";
 import { rootReducer } from "./root-reducer";
 import { rootEpic } from "./root-epic";
 import { services } from "../services";
-import { RootAction, RootState, EpicDependencies } from "./types";
-import config from "../config";
+import { RootAction, RootState, Services } from "typesafe-actions";
 
 // browser history
 export const history = createBrowserHistory();
@@ -20,8 +19,8 @@ export const epicMiddleware = createEpicMiddleware<
   RootAction,
   RootAction,
   RootState,
-  EpicDependencies
->({ dependencies: { ...services, config } });
+  Services
+>({ dependencies: services });
 
 const routerMiddleware = createRouterMiddleware(history);
 

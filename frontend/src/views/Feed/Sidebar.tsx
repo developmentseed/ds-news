@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { RootState } from "../../store/types";
 import { rmRepo, addRepo } from "../../store/query/query.actions";
+import { RootState } from "typesafe-actions";
 
 export default ({
   query: { repo },

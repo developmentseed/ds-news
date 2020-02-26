@@ -1,8 +1,7 @@
 import { push } from "connected-react-router";
 import { of } from "rxjs";
 import { catchError, filter, map, mapTo, switchMap } from "rxjs/operators"; // tslint:disable-line
-import { isActionOf } from "typesafe-actions";
-import { RootEpic } from "../types";
+import { isActionOf, RootEpic } from "typesafe-actions";
 import { fetchToken } from "./auth.actions";
 
 const fetchGithubToken: RootEpic = (action$, state$, { ajax, config }) =>
