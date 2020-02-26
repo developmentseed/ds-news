@@ -1,7 +1,7 @@
 import { replace } from "connected-react-router";
 import { ofType } from "redux-observable";
 import { REHYDRATE } from "redux-persist";
-import { concat, from, merge, of, throwError, timer } from "rxjs";
+import { concat, from, merge, of, timer } from "rxjs";
 import {
   catchError,
   debounceTime,
@@ -144,19 +144,22 @@ const executeSearchEpic: RootEpic = (action$, state$, { github, ajax }) =>
     filter(isActionOf(executeSearch.request)),
     // switchMap ensures we ignore the results of ongoing search requests
     switchMap(({ payload }) =>
-      (state$.value.auth.token?.data
-        ? from(
-            // TODO: Consider using the ajax tool to enable cancellation
+      state$.value.auth.token?.data
+        ? // TODO: Consider using the ajax tool to enable cancellation
+          from(
             github.query({
               query: payload,
               token: state$.value.auth.token.data
             })
-          )
-        : throwError("You must be logged in to query Github")
       ).pipe(
         map(response => executeSearch.success(response)),
-        catchError(message => of(executeSearch.failure(message)))
+            catchError(err =>
+              of(
+                executeSearch.failure(`Failed to query Github: ${err.message}`)
+              )
+            )
       )
+        : of(executeSearch.failure("You must be logged in to query Github"))
     )
   );
 
