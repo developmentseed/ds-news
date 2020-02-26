@@ -1,13 +1,6 @@
 import { push } from "connected-react-router";
-import { of, throwError } from "rxjs";
-import {
-  catchError,
-  filter,
-  map,
-  mapTo,
-  mergeMap,
-  switchMap
-} from "rxjs/operators"; // tslint:disable-line
+import { of } from "rxjs";
+import { catchError, filter, map, mapTo, switchMap } from "rxjs/operators"; // tslint:disable-line
 import { isActionOf } from "typesafe-actions";
 import { RootEpic } from "../types";
 import { fetchToken } from "./auth.actions";
@@ -29,14 +22,15 @@ const fetchGithubToken: RootEpic = (action$, state$, { ajax, config }) =>
         )
         .pipe(
           map(response => response.response),
-          mergeMap(response =>
+          map(response =>
             response.error
-              ? throwError(response.error_description.split("+").join(" "))
-              : of(response)
+              ? fetchToken.failure(
+                  response.error_description.split("+").join(" ")
+                )
+              : !response.access_token
+              ? fetchToken.success("Received invalid access token")
+              : fetchToken.success(response.access_token)
           ),
-          map(({ access_token }: { access_token: string }) => {
-            fetchToken.success(access_token);
-          }),
           catchError(message => of(fetchToken.failure(message)))
         )
     )
