@@ -17,6 +17,7 @@ import { RootState } from "typesafe-actions";
 export const Feed: React.SFC<Props> = ({
   results,
   query,
+  polling,
   dispatchSetSort,
   dispatchSetSearchTerm,
   dispatchAddRepo,
@@ -46,10 +47,11 @@ export const Feed: React.SFC<Props> = ({
       <code>{getQueryString(query)}</code>
     </div>
     <Sidebar
-      query={query}
+      repos={query.repo}
       results={results}
       dispatchAddRepo={dispatchAddRepo}
       dispatchRmRepo={dispatchRmRepo}
+      secondsUntilNextPoll={polling.count}
     />
   </div>
 );
@@ -84,31 +86,3 @@ export default connect<StateProps, DispatchProps, OwnProps, RootState>(
       dispatch
     )
 )(Feed);
-
-// interface StateProps {
-//   query: RootState["query"]["query"];
-//   polling: RootState["query"]["polling"];
-//   results: RootState["query"]["results"];
-// }
-// interface DispatchProps {
-//   dispatchSetSearchTerm: typeof setSearchTerm;
-// }
-// interface OwnProps {}
-// type Props = StateProps & DispatchProps & OwnProps;
-
-// export default connect<StateProps, DispatchProps, OwnProps, RootState>(
-//   ({ query }) => ({
-//     query: query.query,
-//     polling: query.polling,
-//     results: query.results
-//   }),
-//   dispatch =>
-//     bindActionCreators(
-//       {
-//         dispatchSetSearchTerm: setSearchTerm,
-//         dispatchAddRepo: addRepo,
-//         dispatchRmRepo: rmRepo
-//       },
-//       dispatch
-//     )
-// )(Sidebar);
