@@ -82,7 +82,7 @@ export default ({
       <li className="mt-2 ">
         <h4>last updated</h4>
         <QueryStatus results={results} />
-        {secondsUntilNextPoll && (
+        {!!secondsUntilNextPoll && (
           <RefreshCountdown seconds={secondsUntilNextPoll} />
         )}
       </li>
