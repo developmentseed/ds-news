@@ -11,9 +11,7 @@ const fetchGithubToken: RootEpic = (action$, state$, { ajax, config }) =>
       ajax
         .post(
           config.api.auth,
-          {
-            code: payload
-          },
+          { code: payload },
           {
             "Content-Type": "application/json",
             Accept: "application/json"
@@ -24,11 +22,11 @@ const fetchGithubToken: RootEpic = (action$, state$, { ajax, config }) =>
           map(response =>
             response.error
               ? fetchToken.failure(
-                  response.error_description.split("+").join(" ")
-                )
-              : !response.access_token
-              ? fetchToken.success("Received invalid access token")
-              : fetchToken.success(response.access_token)
+                response.error_description.split("+").join(" ")
+              )
+              : response.access_token
+                ? fetchToken.success(response.access_token)
+                : fetchToken.failure("Received invalid access token")
           ),
           catchError(message => of(fetchToken.failure(message)))
         )
