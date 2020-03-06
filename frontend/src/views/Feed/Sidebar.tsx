@@ -17,7 +17,7 @@ const QueryStatus: React.SFC<{ results: RootState["query"]["results"] }> = ({
 const RefreshCountdown: React.SFC<{ seconds: number | null }> = ({
   seconds
 }) => (
-  <div className="text-monospace small" style={{ color: "#aaa" }}>
+  <div className="text-monospace small faded">
     refreshing in{" "}
     {seconds
       ? seconds > 45
@@ -33,21 +33,24 @@ const FilterList: React.SFC<{
   entries: string[];
   dispatchRmEntry: (item: string) => void;
   title: string;
-}> = ({ entries, dispatchRmEntry, title }) => (
+  fallbackText: React.ReactNode;
+}> = ({ entries, dispatchRmEntry, title, fallbackText }) => (
   <ul className="list-unstyled">
-    {entries
-      .slice()
-      .sort()
-      .map((entry, i) => (
-        <li key={i} className="overflow-auto text-nowrap">
-          <span
-            className="ml-1 close-link"
-            title={`remove ${title}`}
-            onClick={() => dispatchRmEntry(entry)}
-          />
-          <pre className="ml-1 d-inline">{entry}</pre>
-        </li>
-      ))}
+    {entries.length
+      ? entries
+          .slice()
+          .sort()
+          .map((entry, i) => (
+            <li key={i} className="overflow-auto text-nowrap">
+              <span
+                className="ml-1 close-link"
+                title={`remove ${title}`}
+                onClick={() => dispatchRmEntry(entry)}
+              />
+              <pre className="ml-1 d-inline">{entry}</pre>
+            </li>
+          ))
+      : fallbackText}
   </ul>
 );
 
@@ -99,6 +102,7 @@ export default ({
           title="repo"
           entries={repos}
           dispatchRmEntry={dispatchRmRepo}
+          fallbackText={<strong>at least one repo required</strong>}
         />
         <FilterForm
           placeholder="owner/repo"
@@ -112,6 +116,7 @@ export default ({
           title="author"
           entries={authors}
           dispatchRmEntry={dispatchRmAuthor}
+          fallbackText={<em className="faded small">all authors</em>}
         />
         <FilterForm
           placeholder="username"
