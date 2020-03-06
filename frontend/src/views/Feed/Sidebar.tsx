@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import moment from "moment";
-import { rmRepo, addRepo } from "../../store/query/query.actions";
+import * as actions from "../../store/query/query.actions";
 import { RootState } from "typesafe-actions";
 
 const QueryStatus: React.SFC<{ results: RootState["query"]["results"] }> = ({
@@ -10,87 +10,113 @@ const QueryStatus: React.SFC<{ results: RootState["query"]["results"] }> = ({
     {results &&
       (results.status === "FETCHING"
         ? "loading..."
-        : `${results.asOf.toLowerCase()}`)}{" "}
+        : `${results.asOf.toLowerCase()}`)}
   </div>
 );
 
-const RefreshCountdown: React.SFC<{ seconds: number }> = ({ seconds }) => (
+const RefreshCountdown: React.SFC<{ seconds: number | null }> = ({
+  seconds
+}) => (
   <div className="text-monospace small" style={{ color: "#aaa" }}>
-    (refreshing in{" "}
-    {seconds > 45
-      ? moment()
-          .add(seconds, "seconds")
-          .fromNow(true)
-      : `${seconds} seconds`}
-    )
+    refreshing in{" "}
+    {seconds
+      ? seconds > 45
+        ? moment()
+            .add(seconds, "seconds")
+            .fromNow(true)
+        : `${seconds} seconds`
+      : "..."}
   </div>
 );
 
-const RepoList: React.SFC<{
-  repos: RootState["query"]["query"]["repo"];
-  dispatchRmRepo: typeof rmRepo;
-}> = ({ repos, dispatchRmRepo }) => (
+const FilterList: React.SFC<{
+  entries: string[];
+  dispatchRmEntry: (item: string) => void;
+  title: string;
+}> = ({ entries, dispatchRmEntry, title }) => (
   <ul className="list-unstyled">
-    {repos
+    {entries
       .slice()
       .sort()
-      .map((repo, i) => (
+      .map((entry, i) => (
         <li key={i} className="overflow-auto text-nowrap">
           <span
             className="ml-1 close-link"
-            title="remove repo"
-            onClick={() => dispatchRmRepo(repo)}
+            title={`remove ${title}`}
+            onClick={() => dispatchRmEntry(entry)}
           />
-          <pre className="ml-1 d-inline">{repo}</pre>
+          <pre className="ml-1 d-inline">{entry}</pre>
         </li>
       ))}
   </ul>
 );
 
-const RepoForm: React.SFC<{ dispatchAddRepo: typeof addRepo }> = ({
-  dispatchAddRepo
-}) => {
-  const [repoName, setRepoName] = useState("");
+const FilterForm: React.SFC<{
+  dispatchAddEntry: (item: string) => void;
+  placeholder: string;
+}> = ({ dispatchAddEntry, placeholder }) => {
+  const [entry, setEntry] = useState("");
   return (
     <form
       onSubmit={e => {
         e.preventDefault();
-        dispatchAddRepo(repoName);
-        setRepoName("");
+        dispatchAddEntry(entry);
+        setEntry("");
       }}
     >
       <input
         type="text"
-        placeholder="owner/repo"
+        placeholder={placeholder}
         className="small text-monospace w-100 pl-1 mt-2"
-        value={repoName}
-        onChange={e => setRepoName(e.currentTarget.value)}
+        value={entry}
+        onChange={e => setEntry(e.currentTarget.value)}
       />
     </form>
   );
 };
 
 export default ({
-  repos,
   secondsUntilNextPoll,
   results,
+  repos,
   dispatchAddRepo,
-  dispatchRmRepo
+  dispatchRmRepo,
+  authors,
+  dispatchAddAuthor,
+  dispatchRmAuthor
 }: Props) => {
   return (
     <ul className="col-sm-3 list-unstyled sidebar">
       <li className="mt-2 ">
         <h4>last updated</h4>
         <QueryStatus results={results} />
-        {!!secondsUntilNextPoll && (
-          <RefreshCountdown seconds={secondsUntilNextPoll} />
-        )}
+        <RefreshCountdown seconds={secondsUntilNextPoll} />
       </li>
 
       <li>
         <h4>Repos</h4>
-        <RepoList repos={repos} dispatchRmRepo={dispatchRmRepo} />
-        <RepoForm dispatchAddRepo={dispatchAddRepo} />
+        <FilterList
+          title="repo"
+          entries={repos}
+          dispatchRmEntry={dispatchRmRepo}
+        />
+        <FilterForm
+          placeholder="owner/repo"
+          dispatchAddEntry={dispatchAddRepo}
+        />
+      </li>
+
+      <li>
+        <h4>Authors</h4>
+        <FilterList
+          title="author"
+          entries={authors}
+          dispatchRmEntry={dispatchRmAuthor}
+        />
+        <FilterForm
+          placeholder="username"
+          dispatchAddEntry={dispatchAddAuthor}
+        />
       </li>
     </ul>
   );
@@ -98,8 +124,11 @@ export default ({
 
 interface Props {
   repos: RootState["query"]["query"]["repo"];
+  authors: RootState["query"]["query"]["author"];
   secondsUntilNextPoll: RootState["query"]["polling"]["count"];
   results: RootState["query"]["results"];
-  dispatchAddRepo: typeof addRepo;
-  dispatchRmRepo: typeof rmRepo;
+  dispatchAddAuthor: typeof actions.addAuthor;
+  dispatchRmAuthor: typeof actions.rmAuthor;
+  dispatchAddRepo: typeof actions.addRepo;
+  dispatchRmRepo: typeof actions.rmRepo;
 }

@@ -2,12 +2,7 @@ import React from "react";
 import { RouteComponentProps } from "react-router";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import {
-  setSearchTerm,
-  setSort,
-  addRepo,
-  rmRepo
-} from "../../store/query/query.actions";
+import * as actions from "../../store/query/query.actions";
 import Issue from "./Issue";
 import Sidebar from "./Sidebar";
 import NavFilter from "./NavFilter";
@@ -21,7 +16,9 @@ export const Feed: React.SFC<Props> = ({
   dispatchSetSort,
   dispatchSetSearchTerm,
   dispatchAddRepo,
-  dispatchRmRepo
+  dispatchRmRepo,
+  dispatchAddAuthor,
+  dispatchRmAuthor
 }) => (
   <div className="row no-gutters">
     <div className="col-sm pr-1">
@@ -47,11 +44,14 @@ export const Feed: React.SFC<Props> = ({
       <code>{getQueryString(query)}</code>
     </div>
     <Sidebar
-      repos={query.repo}
       results={results}
+      secondsUntilNextPoll={polling.count}
+      repos={query.repo}
       dispatchAddRepo={dispatchAddRepo}
       dispatchRmRepo={dispatchRmRepo}
-      secondsUntilNextPoll={polling.count}
+      authors={query.author}
+      dispatchAddAuthor={dispatchAddAuthor}
+      dispatchRmAuthor={dispatchRmAuthor}
     />
   </div>
 );
@@ -61,10 +61,12 @@ interface StateProps {
   polling: RootState["query"]["polling"];
 }
 interface DispatchProps {
-  dispatchSetSearchTerm: typeof setSearchTerm;
-  dispatchSetSort: typeof setSort;
-  dispatchAddRepo: typeof addRepo;
-  dispatchRmRepo: typeof rmRepo;
+  dispatchSetSearchTerm: typeof actions.setSearchTerm;
+  dispatchSetSort: typeof actions.setSort;
+  dispatchAddRepo: typeof actions.addRepo;
+  dispatchRmRepo: typeof actions.rmRepo;
+  dispatchAddAuthor: typeof actions.addAuthor;
+  dispatchRmAuthor: typeof actions.rmAuthor;
 }
 interface OwnProps extends RouteComponentProps {}
 type Props = StateProps & DispatchProps & OwnProps;
@@ -78,10 +80,12 @@ export default connect<StateProps, DispatchProps, OwnProps, RootState>(
   dispatch =>
     bindActionCreators(
       {
-        dispatchSetSearchTerm: setSearchTerm,
-        dispatchSetSort: setSort,
-        dispatchAddRepo: addRepo,
-        dispatchRmRepo: rmRepo
+        dispatchSetSearchTerm: actions.setSearchTerm,
+        dispatchSetSort: actions.setSort,
+        dispatchAddRepo: actions.addRepo,
+        dispatchRmRepo: actions.rmRepo,
+        dispatchAddAuthor: actions.addAuthor,
+        dispatchRmAuthor: actions.rmAuthor
       },
       dispatch
     )
