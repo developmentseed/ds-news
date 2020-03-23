@@ -116,7 +116,9 @@ export default ({
           title="author"
           entries={authors}
           dispatchRmEntry={dispatchRmAuthor}
-          fallbackText={<em className="faded small">all authors</em>}
+          fallbackText={
+            <div className="text-monospace small faded">all authors</div>
+          }
         />
         <FilterForm
           placeholder="username"
