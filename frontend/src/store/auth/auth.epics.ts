@@ -1,6 +1,5 @@
-import { push } from "connected-react-router";
 import { of } from "rxjs";
-import { catchError, filter, map, mapTo, switchMap } from "rxjs/operators"; // tslint:disable-line
+import { catchError, filter, map, switchMap } from "rxjs/operators"; // tslint:disable-line
 import { isActionOf, RootEpic } from "typesafe-actions";
 import { fetchToken } from "./auth.actions";
 
@@ -33,10 +32,4 @@ const fetchGithubToken: RootEpic = (action$, state$, { ajax, config }) =>
     )
   );
 
-const redirectHomeAfterLogin: RootEpic = (action$, state$, { config }) =>
-  action$.pipe(
-    filter(isActionOf(fetchToken.success)),
-    mapTo(push(`${config.basePath}${config.paths.feed}`))
-  );
-
-export const epics = [fetchGithubToken, redirectHomeAfterLogin];
+export const epics = [fetchGithubToken];

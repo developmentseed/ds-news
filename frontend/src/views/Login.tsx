@@ -11,7 +11,7 @@ import config from "../config";
 const Login: React.SFC<Props> = ({ location, dispatchfetchToken, token }) => {
   // Get code from QueryString
   // TODO: Stop using 'query-string', instead get query from router.location.query in redux
-  const { code } = qs.parse(location.search);
+  const { code, state = "" } = qs.parse(location.search);
   const authToken = Array.isArray(code) ? code[0] : code;
 
   // TODO: Mv this logic to Redux Observables
@@ -29,7 +29,12 @@ const Login: React.SFC<Props> = ({ location, dispatchfetchToken, token }) => {
     <p className="error">{token.error}</p>
   ) : (
     // TODO: Redirect to URL that contains original query state
-    <Redirect to={config.paths.feed} />
+    <Redirect
+      to={{
+        pathname: config.paths.feed,
+        search: state as string
+      }}
+    />
   );
 };
 
