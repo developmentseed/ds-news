@@ -11,7 +11,7 @@ const emojis = {
   LAUGH: ":smile:",
   ROCKET: ":rocket:",
   THUMBS_DOWN: ":-1:",
-  THUMBS_UP: ":+1:"
+  THUMBS_UP: ":+1:",
 };
 
 export default ({
@@ -22,9 +22,9 @@ export default ({
   closedAt,
   repository,
   reactions,
-  comments
+  comments,
 }: Props) => (
-  <li className={closedAt ? "closed" : ""}>
+  <li className={`issue ${closedAt ? "closed" : ""}`}>
     <h6 className="mb-0">
       <a
         href={`https://github.com/${repository?.owner.login}/${repository?.name}/issues/${number}`}
@@ -49,7 +49,7 @@ export default ({
           style={{
             maxHeight: "1rem",
             borderRadius: 2,
-            verticalAlign: "text-top"
+            verticalAlign: "text-top",
           }}
         />
         {author?.login}
@@ -71,7 +71,7 @@ export default ({
             (acc, edge) => ({
               ...acc,
               [edge?.node.content || ""]:
-                (acc[edge?.node.content || ""] || 0) + 1
+                (acc[edge?.node.content || ""] || 0) + 1,
             }),
             {} as Record<string, number>
           ) || {}

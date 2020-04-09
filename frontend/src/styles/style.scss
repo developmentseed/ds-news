@@ -40,6 +40,13 @@ a {
 .faded {
   color: #aaa;
 }
+.error {
+  color: #c00;
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  font-size: 0.85em;
+  font-weight: bold;
+}
 
 nav {
   border-bottom: 1px solid #eee;
@@ -89,7 +96,7 @@ nav {
   }
 
   li {
-    display: inline-block;
+    list-style: none;
     float: left;
   }
 
@@ -137,7 +144,7 @@ ol.issues {
     border-left: 0.25em solid #fff;
     border-bottom: 1px dashed #ddd;
 
-    $padding: 0.4rem;
+    $padding: 0.45rem;
 
     margin-bottom: 0;
     padding-top: $padding;
@@ -157,6 +164,8 @@ ol.issues {
     }
 
     p {
+      font-size: 0.8rem;
+      margin-top: 0.25rem;
       margin-bottom: 0;
     }
   }
@@ -202,22 +211,6 @@ ol.issues {
     color: $link-hover-color;
     text-decoration: underline;
   }
-}
-
-.circle-background,
-.circle-progress {
-  fill: none;
-}
-.circle-background {
-  stroke: #ddd;
-}
-.circle-progress {
-  stroke: $accent-color;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.circle-text {
-  font-size: 0.75rem;
 }
 
 .close-link {

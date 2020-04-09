@@ -102,7 +102,7 @@ export default ({
           title="repo"
           entries={repos}
           dispatchRmEntry={dispatchRmRepo}
-          fallbackText={<strong>at least one repo required</strong>}
+          fallbackText={<p className="error">at least one repo required</p>}
         />
         <FilterForm
           placeholder="owner/repo"

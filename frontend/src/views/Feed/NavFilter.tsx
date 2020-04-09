@@ -3,7 +3,7 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
 } from "reactstrap";
 import { QueryState } from "../../store/query/query.reducer";
 
@@ -16,10 +16,10 @@ export default ({ sort, setSort, searchTerm, setSearchTerm }: Props) => {
     "reactions-tada": "celebrated",
     reactions: "reactions",
     "reactions-+1": "liked",
-    "reactions--1": "disliked"
+    "reactions--1": "disliked",
   };
   return (
-    <nav className="navbar px-1">
+    <nav className="navbar px-0">
       <ul className="d-flex" style={{ flexGrow: 1 }}>
         <li className="w-100">
           <input
