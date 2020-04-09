@@ -4,7 +4,7 @@ import qs from "query-string";
 import { connect } from "react-redux";
 import { RootState } from "typesafe-actions";
 import { logout } from "../store/auth/auth.actions";
-import { useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import config from "../config";
 
 export const Nav: React.SFC<Props> = ({ isLoggedIn, dispatchLogout }) => {
@@ -15,8 +15,8 @@ export const Nav: React.SFC<Props> = ({ isLoggedIn, dispatchLogout }) => {
       client_id: config.clientId,
       redirect_uri: `${config.domain}${config.basePath}${config.paths.login}`,
       scope: "repo",
-      state: search // Pass current query params as "state" param
-    }
+      state: search, // Pass current query params as "state" param
+    },
   });
   return (
     <nav id="header" className="navbar">
@@ -30,13 +30,23 @@ export const Nav: React.SFC<Props> = ({ isLoggedIn, dispatchLogout }) => {
           <h1>ds news</h1>
         </li>
         <li>
-          <a
-            className="selected"
-            href={`${process.env.PUBLIC_URL}${config.paths.feed}`}
+          <NavLink
+            activeClassName="selected"
+            exact
+            to={`${process.env.PUBLIC_URL}${config.paths.feed}`}
           >
             feed
-          </a>
+          </NavLink>
         </li>
+        {/* <li>
+          <NavLink
+            activeClassName="selected"
+            exact
+            to={`${process.env.PUBLIC_URL}${config.paths.about}`}
+          >
+            about
+          </NavLink>
+        </li> */}
       </ul>
       <ul>
         <li>
@@ -64,7 +74,7 @@ type Props = StateProps & DispatchProps & OwnProps;
 
 export default connect<StateProps, DispatchProps, OwnProps, RootState>(
   ({ auth }) => ({
-    isLoggedIn: !!auth.token?.data
+    isLoggedIn: !!auth.token?.data,
   }),
-  dispatch => bindActionCreators({ dispatchLogout: logout }, dispatch)
+  (dispatch) => bindActionCreators({ dispatchLogout: logout }, dispatch)
 )(Nav);

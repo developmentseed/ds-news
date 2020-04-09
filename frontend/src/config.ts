@@ -15,6 +15,7 @@ export default {
   },
   paths: {
     feed: "/",
-    login: "/login"
+    login: "/login",
+    about: "/about",
   }
 };
