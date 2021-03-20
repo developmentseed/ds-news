@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import moment from "moment";
 import * as actions from "../../store/query/query.actions";
 import { RootState } from "typesafe-actions";
