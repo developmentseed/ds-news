@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 import * as actions from "../../store/query/query.actions";
 import { RootState } from "typesafe-actions";
 
-const QueryStatus: React.SFC<{ results: RootState["query"]["results"] }> = ({
-  results
+const QueryStatus: React.FC<{ results: RootState["query"]["results"] }> = ({
+  results,
 }) => (
   <div className="text-monospace small">
     {results &&
@@ -14,27 +14,61 @@ const QueryStatus: React.SFC<{ results: RootState["query"]["results"] }> = ({
   </div>
 );
 
-const RefreshCountdown: React.SFC<{ seconds: number | null }> = ({
-  seconds
+const RefreshCountdown: React.FC<{ seconds: number | null }> = ({
+  seconds,
 }) => (
   <div className="text-monospace small faded">
     refreshing in{" "}
     {seconds
       ? seconds > 45
-        ? moment()
-            .add(seconds, "seconds")
-            .fromNow(true)
+        ? moment().add(seconds, "seconds").fromNow(true)
         : `${seconds} seconds`
       : "..."}
   </div>
 );
 
-const FilterList: React.SFC<{
+const FilterEntry: React.FC<{
+  title: string;
+  entry: string;
+  ignored: boolean;
+  ignore: (item: string) => void;
+  unignore: (item: string) => void;
+  remove: (item: string) => void;
+}> = (props) => (
+  <>
+    <span
+      className="ml-1 close-link pointer"
+      title={`remove ${props.title}`}
+      onClick={() => props.remove(props.entry)}
+    />
+    <pre
+      className={`ml-1 d-inline pointer ${props.ignored ? "strikethrough" : ""}`}
+      onClick={() =>
+        props.ignored ? props.unignore(props.entry) : props.ignore(props.entry)
+      }
+    >
+      {props.entry}
+    </pre>
+  </>
+);
+
+const FilterList: React.FC<{
   entries: string[];
+  ignored: string[];
   dispatchRmEntry: (item: string) => void;
+  dispatchIgnoreEntry: (item: string) => void;
+  dispatchUnignoreEntry: (item: string) => void;
   title: string;
   fallbackText: React.ReactNode;
-}> = ({ entries, dispatchRmEntry, title, fallbackText }) => (
+}> = ({
+  entries,
+  dispatchRmEntry,
+  dispatchIgnoreEntry,
+  dispatchUnignoreEntry,
+  title,
+  fallbackText,
+  ignored,
+}) => (
   <ul className="list-unstyled">
     {entries.length
       ? entries
@@ -42,26 +76,28 @@ const FilterList: React.SFC<{
           .sort()
           .map((entry, i) => (
             <li key={i} className="overflow-auto text-nowrap">
-              <span
-                className="ml-1 close-link"
-                title={`remove ${title}`}
-                onClick={() => dispatchRmEntry(entry)}
+              <FilterEntry
+                title={title}
+                entry={entry}
+                ignored={ignored.includes(entry)}
+                ignore={dispatchIgnoreEntry.bind(entry)}
+                unignore={dispatchUnignoreEntry.bind(entry)}
+                remove={dispatchRmEntry.bind(entry)}
               />
-              <pre className="ml-1 d-inline">{entry}</pre>
             </li>
           ))
       : fallbackText}
   </ul>
 );
 
-const FilterForm: React.SFC<{
+const FilterForm: React.FC<{
   dispatchAddEntry: (item: string) => void;
   placeholder: string;
 }> = ({ dispatchAddEntry, placeholder }) => {
   const [entry, setEntry] = useState("");
   return (
     <form
-      onSubmit={e => {
+      onSubmit={(e) => {
         e.preventDefault();
         dispatchAddEntry(entry);
         setEntry("");
@@ -72,41 +108,35 @@ const FilterForm: React.SFC<{
         placeholder={placeholder}
         className="small text-monospace w-100 pl-1 mt-2"
         value={entry}
-        onChange={e => setEntry(e.currentTarget.value)}
+        onChange={(e) => setEntry(e.currentTarget.value)}
       />
     </form>
   );
 };
 
-export default ({
-  secondsUntilNextPoll,
-  results,
-  repos,
-  dispatchAddRepo,
-  dispatchRmRepo,
-  authors,
-  dispatchAddAuthor,
-  dispatchRmAuthor
-}: Props) => {
+export default (props: Props) => {
   return (
     <ul className="col-sm-3 list-unstyled sidebar">
       <li className="mt-2 ">
         <h4>last updated</h4>
-        <QueryStatus results={results} />
-        <RefreshCountdown seconds={secondsUntilNextPoll} />
+        <QueryStatus results={props.results} />
+        <RefreshCountdown seconds={props.secondsUntilNextPoll} />
       </li>
 
       <li>
         <h4>Repos</h4>
         <FilterList
           title="repo"
-          entries={repos}
-          dispatchRmEntry={dispatchRmRepo}
+          entries={props.repos}
+          ignored={props.ignoredRepos}
+          dispatchRmEntry={props.dispatchRmRepo}
+          dispatchIgnoreEntry={props.dispatchIgnoreRepo}
+          dispatchUnignoreEntry={props.dispatchUnignoreRepo}
           fallbackText={<p className="error">at least one repo required</p>}
         />
         <FilterForm
           placeholder="owner/repo"
-          dispatchAddEntry={dispatchAddRepo}
+          dispatchAddEntry={props.dispatchAddRepo}
         />
       </li>
 
@@ -114,15 +144,18 @@ export default ({
         <h4>Authors</h4>
         <FilterList
           title="author"
-          entries={authors}
-          dispatchRmEntry={dispatchRmAuthor}
+          entries={props.authors}
+          ignored={props.ignoredAuthors}
+          dispatchRmEntry={props.dispatchRmAuthor}
+          dispatchIgnoreEntry={props.dispatchIgnoreAuthor}
+          dispatchUnignoreEntry={props.dispatchUnignoreAuthor}
           fallbackText={
             <div className="text-monospace small faded">all authors</div>
           }
         />
         <FilterForm
           placeholder="username"
-          dispatchAddEntry={dispatchAddAuthor}
+          dispatchAddEntry={props.dispatchAddAuthor}
         />
       </li>
     </ul>
@@ -131,11 +164,17 @@ export default ({
 
 interface Props {
   repos: RootState["query"]["query"]["repo"];
+  ignoredRepos: RootState["query"]["query"]["ignoredRepo"];
   authors: RootState["query"]["query"]["author"];
+  ignoredAuthors: RootState["query"]["query"]["ignoredAuthor"];
   secondsUntilNextPoll: RootState["query"]["polling"]["count"];
   results: RootState["query"]["results"];
-  dispatchAddAuthor: typeof actions.addAuthor;
-  dispatchRmAuthor: typeof actions.rmAuthor;
   dispatchAddRepo: typeof actions.addRepo;
   dispatchRmRepo: typeof actions.rmRepo;
+  dispatchIgnoreRepo: typeof actions.ignoreRepo;
+  dispatchUnignoreRepo: typeof actions.unignoreRepo;
+  dispatchAddAuthor: typeof actions.addAuthor;
+  dispatchRmAuthor: typeof actions.rmAuthor;
+  dispatchIgnoreAuthor: typeof actions.ignoreAuthor;
+  dispatchUnignoreAuthor: typeof actions.unignoreAuthor;
 }

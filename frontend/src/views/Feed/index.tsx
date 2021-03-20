@@ -9,31 +9,21 @@ import NavFilter from "./NavFilter";
 import { getQueryString } from "../../store/query/query.selectors";
 import { RootState } from "typesafe-actions";
 
-export const Feed: React.SFC<Props> = ({
-  results,
-  query,
-  polling,
-  dispatchSetSort,
-  dispatchSetSearchTerm,
-  dispatchAddRepo,
-  dispatchRmRepo,
-  dispatchAddAuthor,
-  dispatchRmAuthor
-}) => (
+export const Feed: React.FC<Props> = (props) => (
   <div className="row no-gutters">
     <div className="col-sm pr-1">
       <NavFilter
-        sort={query.sort}
-        setSort={dispatchSetSort}
-        searchTerm={query.search}
-        setSearchTerm={dispatchSetSearchTerm}
+        sort={props.query.sort}
+        setSort={props.dispatchSetSort}
+        searchTerm={props.query.search}
+        setSearchTerm={props.dispatchSetSearchTerm}
       />
-      {results?.status === "FAILED" ? (
-        <pre>{results.error}</pre>
+      {props.results?.status === "FAILED" ? (
+        <pre>{props.results.error}</pre>
       ) : (
-        results?.data && (
+        props.results?.data && (
           <ol className="issues">
-            {results.data.search.nodes
+            {props.results.data.search.nodes
               ?.filter(node => Object.entries(node).length !== 0)
               .map((node, i) => (
                 <Issue key={i} {...node} />
@@ -41,17 +31,23 @@ export const Feed: React.SFC<Props> = ({
           </ol>
         )
       )}
-      <code>{getQueryString(query)}</code>
+      <code>{getQueryString(props.query)}</code>
     </div>
     <Sidebar
-      results={results}
-      secondsUntilNextPoll={polling.count}
-      repos={query.repo}
-      dispatchAddRepo={dispatchAddRepo}
-      dispatchRmRepo={dispatchRmRepo}
-      authors={query.author}
-      dispatchAddAuthor={dispatchAddAuthor}
-      dispatchRmAuthor={dispatchRmAuthor}
+      results={props.results}
+      secondsUntilNextPoll={props.polling.count}
+      repos={props.query.repo}
+      ignoredRepos={props.query.ignoredRepo}
+      dispatchAddRepo={props.dispatchAddRepo}
+      dispatchRmRepo={props.dispatchRmRepo}
+      dispatchIgnoreRepo={props.dispatchIgnoreRepo}
+      dispatchUnignoreRepo={props.dispatchUnignoreRepo}
+      authors={props.query.author}
+      ignoredAuthors={props.query.ignoredAuthor}
+      dispatchAddAuthor={props.dispatchAddAuthor}
+      dispatchRmAuthor={props.dispatchRmAuthor}
+      dispatchIgnoreAuthor={props.dispatchIgnoreAuthor}
+      dispatchUnignoreAuthor={props.dispatchUnignoreAuthor}
     />
   </div>
 );
@@ -65,8 +61,12 @@ interface DispatchProps {
   dispatchSetSort: typeof actions.setSort;
   dispatchAddRepo: typeof actions.addRepo;
   dispatchRmRepo: typeof actions.rmRepo;
+  dispatchIgnoreRepo: typeof actions.ignoreRepo;
+  dispatchUnignoreRepo: typeof actions.unignoreRepo;
   dispatchAddAuthor: typeof actions.addAuthor;
   dispatchRmAuthor: typeof actions.rmAuthor;
+  dispatchIgnoreAuthor: typeof actions.ignoreAuthor;
+  dispatchUnignoreAuthor: typeof actions.unignoreAuthor;
 }
 interface OwnProps extends RouteComponentProps {}
 type Props = StateProps & DispatchProps & OwnProps;
@@ -84,8 +84,12 @@ export default connect<StateProps, DispatchProps, OwnProps, RootState>(
         dispatchSetSort: actions.setSort,
         dispatchAddRepo: actions.addRepo,
         dispatchRmRepo: actions.rmRepo,
+        dispatchIgnoreRepo: actions.ignoreRepo,
+        dispatchUnignoreRepo: actions.unignoreRepo,
         dispatchAddAuthor: actions.addAuthor,
-        dispatchRmAuthor: actions.rmAuthor
+        dispatchRmAuthor: actions.rmAuthor,
+        dispatchIgnoreAuthor: actions.ignoreAuthor,
+        dispatchUnignoreAuthor: actions.unignoreAuthor,
       },
       dispatch
     )

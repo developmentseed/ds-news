@@ -12,6 +12,8 @@ export type QueryState = Readonly<{
     repo: string[];
     author: string[];
     sort: string;
+    ignoredRepo: string[];
+    ignoredAuthor: string[];
   };
   results: null | (Async<IssuesSearchResult, string> & { asOf: string });
   polling: {
@@ -25,7 +27,9 @@ const initialState: QueryState = {
     search: "",
     repo: [],
     author: [],
-    sort: "created"
+    sort: "created",
+    ignoredRepo: [],
+    ignoredAuthor: []
   },
   results: null,
   polling: {
@@ -56,6 +60,14 @@ const queryReducer = createReducer(initialState.query)
     ...state,
     repo: repo.filter(name => name !== payload)
   }))
+  .handleAction(actions.ignoreRepo, (state, { payload }) => ({
+    ...state,
+    ignoredRepo: state.ignoredRepo.concat(payload)
+  }))
+  .handleAction(actions.unignoreRepo, (state, { payload }) => ({
+    ...state,
+    ignoredRepo: state.ignoredRepo.filter(repo => repo !== payload)
+  }))
   .handleAction(actions.addAuthor, ({ author, ...state }, { payload }) => ({
     ...state,
     author: author.includes(payload) ? author : author.concat(payload)
@@ -67,6 +79,14 @@ const queryReducer = createReducer(initialState.query)
   .handleAction(actions.setAuthor, (state, { payload }) => ({
     ...state,
     author: [payload]
+  }))
+  .handleAction(actions.ignoreAuthor, (state, { payload }) => ({
+    ...state,
+    ignoredAuthor: state.ignoredAuthor.concat(payload)
+  }))
+  .handleAction(actions.unignoreAuthor, (state, { payload }) => ({
+    ...state,
+    ignoredAuthor: state.ignoredAuthor.filter(author => author !== payload)
   }));
 
 const resultsReducer = createReducer(initialState.results)
