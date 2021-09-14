@@ -7,7 +7,7 @@ import {
 } from "reactstrap";
 import { QueryState } from "../../store/query/query.reducer";
 
-export default ({ sort, setSort, searchTerm, setSearchTerm }: Props) => {
+export default ({ sort, setSort, searchTerm, setSearchTerm, isFetching }: Props) => {
   const sortOptions = {
     created: "recently created",
     updated: "recently updated",
@@ -25,7 +25,7 @@ export default ({ sort, setSort, searchTerm, setSearchTerm }: Props) => {
           <input
             placeholder="Search"
             value={searchTerm}
-            className="text-monospace w-100"
+            className={`text-monospace w-100 ${isFetching ? 'loading' : ''}`}
             onChange={(e: React.FormEvent<HTMLInputElement>) =>
               setSearchTerm(e.currentTarget.value)
             }
@@ -57,4 +57,5 @@ interface Props {
   setSort: (sort: string) => void;
   searchTerm: QueryState["query"]["search"];
   setSearchTerm: (term: string) => void;
+  isFetching: boolean;
 }

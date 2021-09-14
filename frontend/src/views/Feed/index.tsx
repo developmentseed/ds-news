@@ -17,6 +17,7 @@ export const Feed: React.FC<Props> = (props) => (
         setSort={props.dispatchSetSort}
         searchTerm={props.query.search}
         setSearchTerm={props.dispatchSetSearchTerm}
+        isFetching={props.results?.status === 'FETCHING'}
       />
       {props.results?.status === "FAILED" ? (
         <pre>{props.results.error}</pre>
