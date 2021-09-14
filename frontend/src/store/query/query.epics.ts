@@ -1,21 +1,20 @@
 import { replace } from "connected-react-router";
 import { ofType } from "redux-observable";
 import { REHYDRATE } from "redux-persist";
-import { concat, from, merge, of, timer } from "rxjs";
+import { from, merge, of, timer } from "rxjs";
 import {
   catchError,
   debounceTime,
   filter,
+  flatMap,
   map,
-  mergeMapTo,
   pairwise,
-  repeat,
   switchMap,
   switchMapTo,
   takeUntil,
   takeWhile
 } from "rxjs/operators";
-import { isActionOf, RootEpic, RootState } from "typesafe-actions";
+import { EmptyAction, isActionOf, PayloadAction, RootEpic, RootState } from "typesafe-actions";
 import { fetchToken } from "../auth/auth.actions";
 import {
   executeSearch,
@@ -81,12 +80,6 @@ const triggerSearchEpic: RootEpic = (action$, state$, { config }) =>
     // ... actions where login occurred
     action$.pipe(filter(isActionOf(fetchToken.success))),
 
-    // ... actions where poll counter hits 0
-    action$.pipe(
-      filter(isActionOf(setPollingTimer)),
-      filter(({ payload }) => payload === 0)
-    ),
-
     // ... states where compared to last state query has changed
     state$.pipe(pairwise(), filter(queryChanged))
   ).pipe(
@@ -104,18 +97,12 @@ const triggerSearchEpic: RootEpic = (action$, state$, { config }) =>
 const rehydrationEpic: RootEpic = (action$, state$) =>
   action$.pipe(
     ofType(REHYDRATE),
-    mergeMapTo(
-      concat(
-        // Refresh our query results if we are logged in
-        of(
-          executeSearch.request()
-        ).pipe(filter(() => !!state$.value.auth.token?.data)),
-
-        // Start polling if polling is set to active and we are logged in
-        of(startPolling()).pipe(
-          filter(() => !!state$.value.query.polling.active),
-          filter(() => !!state$.value.auth.token?.data)
-        )
+    switchMapTo(
+      of(
+        // Refresh our query results
+        executeSearch.request(),
+        // Start polling
+        startPolling()
       )
     )
   );
@@ -123,13 +110,24 @@ const rehydrationEpic: RootEpic = (action$, state$) =>
 const pollQuery: RootEpic = (action$, state$) =>
   action$.pipe(
     filter(isActionOf(startPolling)),
+
+    // if polling is set to active and we are logged in
+    filter(() => !!state$.value.query.polling.active),
+
+    // if we are logged in
+    filter(() => !!state$.value.auth.token?.data),
+
     switchMapTo(
       timer(0, 1000).pipe(
         // Compute diff between polling time and current counter value
         map(val => state$.value.query.polling.interval - val),
         takeWhile(val => val >= 0),
-        map(setPollingTimer),
-        repeat(),
+        flatMap((val) => of(
+          ...([] as (EmptyAction<any> | PayloadAction<any, any>)[])
+            .concat(setPollingTimer(val))
+            // Search when poll counter hits 0
+            .concat(val === 0 ? executeSearch.request() : []),
+        )),
         takeUntil(action$.pipe(ofType(stopPolling)))
       )
     )
@@ -141,22 +139,29 @@ const pollQuery: RootEpic = (action$, state$) =>
 const executeSearchEpic: RootEpic = (action$, state$, { github, ajax }) =>
   action$.pipe(
     filter(isActionOf(executeSearch.request)),
+
     // switchMap ensures we ignore the results of ongoing search requests
     switchMap(() =>
       state$.value.auth.token?.data
         ? from(
-            github.query({
-              query: getQueryString(state$.value.query.query),
-              token: state$.value.auth.token.data
-            })
-          ).pipe(
-            map(response => executeSearch.success(response)),
-            catchError(err =>
-              of(
-                executeSearch.failure(`Failed to query Github: ${err.message}`)
-              )
+          github.query({
+            query: getQueryString(state$.value.query.query),
+            token: state$.value.auth.token.data
+          })
+        ).pipe(
+          flatMap(response => of(
+            // Emit search response
+            executeSearch.success(response),
+            // Restart polling
+            startPolling()
+          )
+          ),
+          catchError(err =>
+            of(
+              executeSearch.failure(`Failed to query Github: ${err.message}`)
             )
           )
+        )
         : of(executeSearch.failure("You must be logged in to query Github"))
     )
   );
