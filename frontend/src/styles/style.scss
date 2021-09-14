@@ -135,6 +135,23 @@ nav {
       }
     }
   }
+
+  .input-group {
+    .form-control {
+      border-color: initial;
+    }
+    .input-group-append, .input-group-prepend {
+      button {
+        margin: inherit;
+        border-left: none;
+        &:hover {
+          &::after {
+            display: none
+          }
+        }
+      }
+    }
+  }
 }
 
 ol.issues {

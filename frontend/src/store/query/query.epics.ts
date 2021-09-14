@@ -95,7 +95,7 @@ const triggerSearchEpic: RootEpic = (action$, state$, { config }) =>
     // Throttle search executions
     debounceTime(config.searchDebounceMs),
     // Execute search with computed query string
-    map(() => executeSearch.request(getQueryString(state$.value.query.query)))
+    map(() => executeSearch.request())
   );
 
 /**
@@ -108,7 +108,7 @@ const rehydrationEpic: RootEpic = (action$, state$) =>
       concat(
         // Refresh our query results if we are logged in
         of(
-          executeSearch.request(getQueryString(state$.value.query.query))
+          executeSearch.request()
         ).pipe(filter(() => !!state$.value.auth.token?.data)),
 
         // Start polling if polling is set to active and we are logged in
@@ -142,11 +142,11 @@ const executeSearchEpic: RootEpic = (action$, state$, { github, ajax }) =>
   action$.pipe(
     filter(isActionOf(executeSearch.request)),
     // switchMap ensures we ignore the results of ongoing search requests
-    switchMap(({ payload }) =>
+    switchMap(() =>
       state$.value.auth.token?.data
         ? from(
             github.query({
-              query: payload,
+              query: getQueryString(state$.value.query.query),
               token: state$.value.auth.token.data
             })
           ).pipe(

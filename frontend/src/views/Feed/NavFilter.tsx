@@ -7,7 +7,7 @@ import {
 } from "reactstrap";
 import { QueryState } from "../../store/query/query.reducer";
 
-export default ({ sort, setSort, searchTerm, setSearchTerm, isFetching }: Props) => {
+export default ({ sort, setSort, searchTerm, setSearchTerm, isFetching, triggerSearch }: Props) => {
   const sortOptions = {
     created: "recently created",
     updated: "recently updated",
@@ -22,14 +22,26 @@ export default ({ sort, setSort, searchTerm, setSearchTerm, isFetching }: Props)
     <nav className="navbar px-0">
       <ul className="d-flex" style={{ flexGrow: 1 }}>
         <li className="w-100">
-          <input
-            placeholder="Search"
-            value={searchTerm}
-            className={`text-monospace w-100 ${isFetching ? 'loading' : ''}`}
-            onChange={(e: React.FormEvent<HTMLInputElement>) =>
-              setSearchTerm(e.currentTarget.value)
-            }
-          />
+          <div className="input-group input-group-sm ">
+            <input
+              placeholder="Search"
+              value={searchTerm}
+              className={`form-control text-monospace w-100 ${isFetching ? 'loading' : ''}`}
+              onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                setSearchTerm(e.currentTarget.value)
+              }
+            />
+            <div className="input-group-append">
+              <button 
+                className="btn btn-outline-secondary" 
+                type="button" 
+                disabled={isFetching}
+                onClick={() => triggerSearch()}
+              >
+                &#x21bb;
+              </button>
+            </div>
+          </div>
         </li>
       </ul>
       <ul className="ml-auto">
@@ -57,5 +69,6 @@ interface Props {
   setSort: (sort: string) => void;
   searchTerm: QueryState["query"]["search"];
   setSearchTerm: (term: string) => void;
+  triggerSearch: () => void;
   isFetching: boolean;
 }

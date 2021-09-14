@@ -18,6 +18,7 @@ export const Feed: React.FC<Props> = (props) => (
         searchTerm={props.query.search}
         setSearchTerm={props.dispatchSetSearchTerm}
         isFetching={props.results?.status === 'FETCHING'}
+        triggerSearch={props.dispatchTriggerSearch}
       />
       {props.results?.status === "FAILED" ? (
         <pre>{props.results.error}</pre>
@@ -59,6 +60,7 @@ interface StateProps {
 }
 interface DispatchProps {
   dispatchSetSearchTerm: typeof actions.setSearchTerm;
+  dispatchTriggerSearch: typeof actions.executeSearch.request;
   dispatchSetSort: typeof actions.setSort;
   dispatchAddRepo: typeof actions.addRepo;
   dispatchRmRepo: typeof actions.rmRepo;
@@ -82,6 +84,7 @@ export default connect<StateProps, DispatchProps, OwnProps, RootState>(
     bindActionCreators(
       {
         dispatchSetSearchTerm: actions.setSearchTerm,
+        dispatchTriggerSearch: actions.executeSearch.request,
         dispatchSetSort: actions.setSort,
         dispatchAddRepo: actions.addRepo,
         dispatchRmRepo: actions.rmRepo,
