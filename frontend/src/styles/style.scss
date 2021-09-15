@@ -293,13 +293,15 @@ ol.issues {
       -45deg,
       transparent 0%,
       transparent 46%,
-      white 46%,
-      white 56%,
+      var(--background-color) 46%,
+      var(--background-color) 56%,
       transparent 56%,
       transparent 100%
     ),
-    -webkit-linear-gradient(45deg, transparent 0%, transparent 46%, white 46%, white
-          56%, transparent 56%, transparent 100%);
+    -webkit-linear-gradient(45deg, transparent 0%, transparent 46%, var(
+            --background-color
+          )
+          46%, var(--background-color) 56%, transparent 56%, transparent 100%);
   background-color: #999;
   border-color: #999;
   transition: all 0.3s ease;
