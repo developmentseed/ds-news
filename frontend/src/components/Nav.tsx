@@ -7,7 +7,7 @@ import { logout } from "../store/auth/auth.actions";
 import { NavLink, useLocation } from "react-router-dom";
 import config from "../config";
 
-export const Nav: React.SFC<Props> = ({ isLoggedIn, dispatchLogout }) => {
+export const Nav: React.FC<Props> = ({ isLoggedIn, dispatchLogout }) => {
   const [isDark, setDark] = useState(false);
   useEffect(() => {
     const isDark = window.matchMedia("(prefers-color-scheme: dark)");

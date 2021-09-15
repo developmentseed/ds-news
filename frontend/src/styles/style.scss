@@ -1,7 +1,6 @@
 @import "~bootstrap/scss/bootstrap.scss";
 @import "./rainbows.scss";
 
-
 :root {
   --font-color: #333;
   --link-hover-color: #000;
@@ -19,12 +18,12 @@
   --font-color: #ddd;
   --link-hover-color: #fff;
   --pre-color: white;
-  
-  --header-background: rgb(22,27,34);
-  --background-color:  rgb(13,17,23);
+
+  --header-background: rgb(22, 27, 34);
+  --background-color: rgb(13, 17, 23);
   --hover-background: #352f2f;
-  
-  --border-color: #{lighten( rgb(13,17,23), 20%)};
+
+  --border-color: #{lighten(rgb(13, 17, 23), 20%)};
 }
 
 body {
@@ -41,7 +40,8 @@ pre {
   color: var(--pre-color);
 }
 
-input, .form-control {
+input,
+.form-control {
   background-color: var(--background-color);
   color: var(--font-color);
   &:focus {
@@ -183,14 +183,15 @@ nav {
     .form-control {
       border-color: initial;
     }
-    .input-group-append, .input-group-prepend {
+    .input-group-append,
+    .input-group-prepend {
       button {
         margin: inherit;
         border-left: none;
         border-color: var(--border-color);
         &:hover {
           &::after {
-            display: none
+            display: none;
           }
         }
       }

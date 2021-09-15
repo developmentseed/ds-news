@@ -8,7 +8,7 @@ import { bindActionCreators } from "redux";
 import { AuthState } from "../store/auth/auth.reducer";
 import config from "../config";
 
-const Login: React.SFC<Props> = ({ location, dispatchfetchToken, token }) => {
+const Login: React.FC<Props> = ({ location, dispatchfetchToken, token }) => {
   // Get code from QueryString
   // TODO: Stop using 'query-string', instead get query from router.location.query in redux
   const { code, state = "" } = qs.parse(location.search);
