@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { bindActionCreators } from "redux";
 import qs from "query-string";
 import { connect } from "react-redux";
@@ -6,25 +6,9 @@ import { RootState } from "typesafe-actions";
 import { logout } from "../store/auth/auth.actions";
 import { NavLink, useLocation } from "react-router-dom";
 import config from "../config";
+import { LightSwitch } from "./LightSwitch";
 
 export const Nav: React.FC<Props> = ({ isLoggedIn, dispatchLogout }) => {
-  const [isDark, setDark] = useState(false);
-  useEffect(() => {
-    const isDark = window.matchMedia("(prefers-color-scheme: dark)");
-    setDark(isDark.matches);
-    isDark.addEventListener("change", (event: MediaQueryListEvent) => {
-      setDark(event.matches);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (isDark) {
-      document.body.classList.add("dark");
-    } else {
-      document.body.classList.remove("dark");
-    }
-  }, [isDark]);
-
   const { search } = useLocation();
   const loginUrl = qs.stringifyUrl({
     url: "https://github.com/login/oauth/authorize",
@@ -67,11 +51,7 @@ export const Nav: React.FC<Props> = ({ isLoggedIn, dispatchLogout }) => {
       </ul>
       <ul>
         <li>
-          {
-            <span className="btn btn-sm" onClick={() => setDark(!isDark)}>
-              {isDark ? "🌙" : "☀️"}
-            </span>
-          }
+          <LightSwitch />
         </li>
         <li>
           {isLoggedIn ? (
