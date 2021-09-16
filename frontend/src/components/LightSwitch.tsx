@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 
 export const LightSwitch: React.FC<Props> = () => {
   const [isDark, setDark] = useState(false);
+
+  // Sync isDark state with browser's prefered color scheme
   useEffect(() => {
     const isDark = window.matchMedia("(prefers-color-scheme: dark)");
     setDark(isDark.matches);
@@ -10,6 +12,7 @@ export const LightSwitch: React.FC<Props> = () => {
     });
   }, []);
 
+  // When isDark changes, apply .dark class to body
   useEffect(() => {
     if (isDark) {
       document.body.classList.add("dark");

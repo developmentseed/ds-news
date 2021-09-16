@@ -26,6 +26,10 @@
   --border-color: #{lighten(rgb(13, 17, 23), 20%)};
 }
 
+* {
+  transition: background-color 0.5s ease, border 0.5s ease;
+}
+
 body {
   margin: 0;
   font-family: Roboto, -apple-system, BlinkMacSystemFont, Segoe UI, Oxygen,
