@@ -36,12 +36,13 @@ export default ({
     <p>
       <a
         href={`https://github.com/${repository?.owner.login}/${repository?.name}/issues/${number}`}
+        tabindex="-1"
       >
         <strong>{repository?.name}</strong>#{number}
       </a>
       {" by "}
       {/* Author */}
-      <a href={`https://github.com/${author?.login}`}>
+      <a href={`https://github.com/${author?.login}`} tabindex="-1">
         <img
           src={author?.avatarUrl}
           alt={`${author?.login} profile pic`}
