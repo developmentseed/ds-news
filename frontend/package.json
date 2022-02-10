@@ -18,7 +18,7 @@
     "gh-pages": "^2.2.0",
     "history": "^4.10.1",
     "moment": "^2.24.0",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "query-string": "^6.10.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
