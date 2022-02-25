@@ -5,17 +5,17 @@
     "main.js.map": "/ds-news/static/js/main.87a9e642.chunk.js.map",
     "runtime-main.js": "/ds-news/static/js/runtime-main.6170c3cb.js",
     "runtime-main.js.map": "/ds-news/static/js/runtime-main.6170c3cb.js.map",
-    "static/js/2.f5e8f9f0.chunk.js": "/ds-news/static/js/2.f5e8f9f0.chunk.js",
-    "static/js/2.f5e8f9f0.chunk.js.map": "/ds-news/static/js/2.f5e8f9f0.chunk.js.map",
+    "static/js/2.03295336.chunk.js": "/ds-news/static/js/2.03295336.chunk.js",
+    "static/js/2.03295336.chunk.js.map": "/ds-news/static/js/2.03295336.chunk.js.map",
     "index.html": "/ds-news/index.html",
-    "precache-manifest.4b25b0f67cbbad30664b2286ac4c59a4.js": "/ds-news/precache-manifest.4b25b0f67cbbad30664b2286ac4c59a4.js",
+    "precache-manifest.3964d7df705cb7753915745924330aaf.js": "/ds-news/precache-manifest.3964d7df705cb7753915745924330aaf.js",
     "service-worker.js": "/ds-news/service-worker.js",
     "static/css/main.fb2cec63.chunk.css.map": "/ds-news/static/css/main.fb2cec63.chunk.css.map",
-    "static/js/2.f5e8f9f0.chunk.js.LICENSE": "/ds-news/static/js/2.f5e8f9f0.chunk.js.LICENSE"
+    "static/js/2.03295336.chunk.js.LICENSE": "/ds-news/static/js/2.03295336.chunk.js.LICENSE"
   },
   "entrypoints": [
     "static/js/runtime-main.6170c3cb.js",
-    "static/js/2.f5e8f9f0.chunk.js",
+    "static/js/2.03295336.chunk.js",
     "static/css/main.fb2cec63.chunk.css",
     "static/js/main.87a9e642.chunk.js"
   ]
