@@ -36,13 +36,13 @@ export default ({
     <p>
       <a
         href={`https://github.com/${repository?.owner.login}/${repository?.name}/issues/${number}`}
-        tabindex="-1"
+        tabIndex={-1}
       >
         <strong>{repository?.name}</strong>#{number}
       </a>
       {" by "}
       {/* Author */}
-      <a href={`https://github.com/${author?.login}`} tabindex="-1">
+      <a href={`https://github.com/${author?.login}`} tabIndex={-1}>
         <img
           src={author?.avatarUrl}
           alt={`${author?.login} profile pic`}
@@ -111,4 +111,4 @@ export default ({
   </li>
 );
 
-interface Props extends IssueNode {}
+interface Props extends IssueNode { }
