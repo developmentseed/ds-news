@@ -2,7 +2,7 @@
   "name": "ds-news",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://alukach.com/ds-news/",
+  "homepage": "https://news.ds.io/",
   "dependencies": {
     "@octokit/graphql": "^4.3.1",
     "@testing-library/jest-dom": "^4.2.4",
