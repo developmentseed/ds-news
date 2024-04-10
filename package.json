@@ -9,15 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "^1.22.0",
-    "@aws-cdk/aws-ec2": "^1.22.0",
-    "@aws-cdk/aws-lambda": "^1.22.0",
-    "@aws-cdk/core": "^1.22.0",
+    "@types/aws-lambda": "^8.10.137",
     "@types/node": "^13.7.0",
-    "aws-cdk": "^1.174.0",
+    "aws-cdk-lib": "^2.136.1",
+    "constructs": "^10.3.0",
     "dotenv": "^8.2.0",
     "source-map-support": "^0.5.16",
     "typescript": "~3.7.2"
-  },
-  "devDependencies": {}
+  }
 }

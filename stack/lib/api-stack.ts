@@ -1,48 +1,40 @@
-import * as apigateway from "@aws-cdk/aws-apigateway";
-import * as lambda from "@aws-cdk/aws-lambda";
-import * as logs from "@aws-cdk/aws-logs";
-import * as cdk from "@aws-cdk/core";
+import { CfnOutput, Stack, StackProps } from "aws-cdk-lib";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as lambda_nodejs from "aws-cdk-lib/aws-lambda-nodejs";
+import * as logs from "aws-cdk-lib/aws-logs";
+import * as route53 from "aws-cdk-lib/aws-route53";
+import { Construct } from "constructs";
 
-export class ApiStack extends cdk.Stack {
+export class ApiStack extends Stack {
   constructor(
-    scope: cdk.Construct,
+    scope: Construct,
     id: string,
     { ghClientId, ghClientSecret, ...props }: Props
   ) {
     super(scope, id, props);
 
-    // TODO: Build TS project (run npm install, tsc, and copy node_modules into dist)
-
-    // Create API handler funcnction
-    const apiHandler = new lambda.Function(this, "apiHandler", {
-      runtime: lambda.Runtime.NODEJS_12_X,
-      handler: "auth.handler",
-      code: lambda.Code.asset("./api/dist"),
+    // Create API handler function
+    const apiHandler = new lambda_nodejs.NodejsFunction(this, "auth", {
       environment: {
         CLIENT_ID: ghClientId,
-        CLIENT_SECRET: ghClientSecret
+        CLIENT_SECRET: ghClientSecret,
       },
       tracing: lambda.Tracing.ACTIVE,
-      logRetention: logs.RetentionDays.SIX_MONTHS
+      logRetention: logs.RetentionDays.SIX_MONTHS,
     });
 
-    // Create & configure API
-    const api = new apigateway.RestApi(this, "api", {
-      deployOptions: {
-        stageName: "dev"
-      },
-      defaultCorsPreflightOptions: {
-        allowOrigins: apigateway.Cors.ALL_ORIGINS, // TODO: Tighten this up
-        allowMethods: apigateway.Cors.ALL_METHODS
-      }
+    const { url } = apiHandler.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
     });
-    api.root
-      .addResource("auth")
-      .addMethod("POST", new apigateway.LambdaIntegration(apiHandler));
+
+    new CfnOutput(this, "auth-api", {
+      exportName: "auth-api",
+      value: url,
+    });
   }
 }
 
-interface Props extends cdk.StackProps {
+interface Props extends StackProps {
   ghClientId: string;
   ghClientSecret: string;
 }
