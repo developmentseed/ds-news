@@ -1,17 +1,16 @@
 import React from "react";
-import { Emoji } from "emoji-mart";
 import moment from "moment";
 import { IssueNode } from "../../services/Github";
 
 const emojis = {
-  CONFUSED: ":confused:",
-  EYES: ":eyes:",
-  HEART: ":heart:",
-  HOORAY: ":tada:",
-  LAUGH: ":smile:",
-  ROCKET: ":rocket:",
-  THUMBS_DOWN: ":-1:",
-  THUMBS_UP: ":+1:",
+  CONFUSED: "😕",
+  EYES: "👀",
+  HEART: "❤️",
+  HOORAY: "🎉",
+  LAUGH: "😀",
+  ROCKET: "🚀",
+  THUMBS_DOWN: "👎",
+  THUMBS_UP: "👍",
 };
 
 export default ({
@@ -80,12 +79,8 @@ export default ({
           .slice()
           .sort(([r1], [r2]) => (r2 > r1 ? -1 : 1))
           .map(([reaction, count]) => (
-            <span key={reaction}>
-              <Emoji
-                emoji={emojis[reaction as keyof typeof emojis]}
-                size={16}
-                tooltip
-              />
+            <span key={reaction} style={{ fontSize: 16 }} title={reaction}>
+              {emojis[reaction as keyof typeof emojis]}
               {count > 1 && <sup>{count}</sup>}
             </span>
           ))
@@ -96,7 +91,7 @@ export default ({
       <span>
         {comments.totalCount ? (
           <>
-            <Emoji emoji={"speech_balloon"} size={16} tooltip />
+            <span style={{ fontSize: 16 }}>💬</span>
             {comments.totalCount > 1 && (
               <sup>
                 {comments.totalCount === 100 ? "100+" : comments.totalCount}
@@ -111,4 +106,4 @@ export default ({
   </li>
 );
 
-interface Props extends IssueNode { }
+interface Props extends IssueNode {}
