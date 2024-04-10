@@ -14,7 +14,7 @@ export const Nav: React.FC<Props> = ({ isLoggedIn, dispatchLogout }) => {
     url: "https://github.com/login/oauth/authorize",
     query: {
       client_id: config.clientId,
-      redirect_uri: `${config.domain}${config.basePath}${config.paths.login}`,
+      redirect_uri: `${window.location.origin}${config.basePath}${config.paths.login}`,
       scope: "repo",
       state: search, // Pass current query params as "state" param
     },
@@ -25,7 +25,7 @@ export const Nav: React.FC<Props> = ({ isLoggedIn, dispatchLogout }) => {
         <li>
           <img
             className="logo"
-            src={`${process.env.PUBLIC_URL}/favicon.png`}
+            src={`${config.basePath}/favicon.png`}
             alt="ds news logo"
           />
           <h1>ds news</h1>
@@ -34,7 +34,7 @@ export const Nav: React.FC<Props> = ({ isLoggedIn, dispatchLogout }) => {
           <NavLink
             activeClassName="selected"
             exact
-            to={`${process.env.PUBLIC_URL}${config.paths.feed}`}
+            to={`${config.basePath}${config.paths.feed}`}
           >
             feed
           </NavLink>
@@ -43,7 +43,7 @@ export const Nav: React.FC<Props> = ({ isLoggedIn, dispatchLogout }) => {
           <NavLink
             activeClassName="selected"
             exact
-            to={`${process.env.PUBLIC_URL}${config.paths.about}`}
+            to={`${config.basePath}${config.paths.about}`}
           >
             about
           </NavLink>
