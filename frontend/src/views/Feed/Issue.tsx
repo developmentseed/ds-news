@@ -13,7 +13,7 @@ const emojis = {
   THUMBS_UP: "👍",
 };
 
-export default ({
+const Issue: React.FC<Props> = ({
   title,
   number,
   author,
@@ -22,7 +22,7 @@ export default ({
   repository,
   reactions,
   comments,
-}: Props) => (
+}) => (
   <li className={`issue ${closedAt ? "closed" : ""}`}>
     <h6 className="mb-0">
       <a
@@ -107,3 +107,5 @@ export default ({
 );
 
 interface Props extends IssueNode {}
+
+export default Issue;

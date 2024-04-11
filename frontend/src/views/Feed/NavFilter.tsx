@@ -18,14 +18,14 @@ const sortOptions = {
   "reactions--1": "disliked",
 };
 
-export default ({
+const NavFilter: React.FC<Props> = ({
   sort,
   setSort,
   searchTerm,
   setSearchTerm,
   isFetching,
   triggerSearch,
-}: Props) => (
+}) => (
   <nav className="navbar px-0">
     <ul className="d-flex" style={{ flexGrow: 1 }}>
       <li className="w-100">
@@ -51,9 +51,9 @@ export default ({
                 <div className="spinner-border spinner-border-sm" role="status">
                   <span className="sr-only">Loading...</span>
                 </div>
-              ) : 
+              ) : (
                 <span className="pl-1">↻</span>
-              }
+              )}
             </button>
           </div>
         </div>
@@ -86,3 +86,5 @@ interface Props {
   triggerSearch: () => void;
   isFetching: boolean;
 }
+
+export default NavFilter;

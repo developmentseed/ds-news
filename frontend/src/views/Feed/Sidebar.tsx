@@ -42,7 +42,9 @@ const FilterEntry: React.FC<{
       onClick={() => props.remove(props.entry)}
     />
     <pre
-      className={`ml-1 d-inline pointer ${props.ignored ? "strikethrough" : ""}`}
+      className={`ml-1 d-inline pointer ${
+        props.ignored ? "strikethrough" : ""
+      }`}
       onClick={() =>
         props.ignored ? props.unignore(props.entry) : props.ignore(props.entry)
       }
@@ -114,7 +116,7 @@ const FilterForm: React.FC<{
   );
 };
 
-export default (props: Props) => {
+const Sidebar: React.FC<Props> = (props) => {
   return (
     <ul className="col-sm-3 list-unstyled sidebar">
       <li className="mt-2 ">
@@ -178,3 +180,5 @@ interface Props {
   dispatchIgnoreAuthor: typeof actions.ignoreAuthor;
   dispatchUnignoreAuthor: typeof actions.unignoreAuthor;
 }
+
+export default Sidebar;
