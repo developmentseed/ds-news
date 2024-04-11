@@ -66,7 +66,9 @@ const loadFromUrl: RootEpic = (action$, state$, { config }) =>
     ),
     map(() =>
       setQuery(
-        getQueryFromString(state$.value.router.location.search.slice(3)) // Slice to ignore '?q='
+        getQueryFromString(
+          new URLSearchParams(state$.value.router.location.search).toString()
+        )
       )
     )
   );
