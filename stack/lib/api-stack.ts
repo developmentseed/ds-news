@@ -15,6 +15,8 @@ export class ApiStack extends Stack {
 
     // Create API handler function
     const apiHandler = new lambda_nodejs.NodejsFunction(this, "auth", {
+      functionName: "ds-news-auth-api",
+      runtime: lambda.Runtime.NODEJS_20_X,
       environment: {
         CLIENT_ID: ghClientId,
         CLIENT_SECRET: ghClientSecret,

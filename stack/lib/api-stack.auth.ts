@@ -9,53 +9,63 @@ export const handler: LambdaFunctionURLHandler = async ({
   body,
   requestContext,
 }) => {
-  if (requestContext.http.method !== "POST") {
-    return {
-      statusCode: 405,
-      headers: {
-        "content-type": "application/json",
-        "access-control-allow-origin": "*",
-      },
-      body: JSON.stringify({ message: "Method Not Allowed" }),
-    };
-  }
-
-  if (!body)
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ message: "Bad Request, no data" }),
-    };
-  const { code = undefined }: { code?: string } = JSON.parse(body);
-  if (!code)
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ message: "Missing code" }),
-    };
-
-  const response = await fetch("https://github.com/login/oauth/access_token", {
-    method: "POST",
-    body: JSON.stringify({ client_id, client_secret, code }),
-    headers: { "content-type": "application/json" },
-  });
-
-  const text = await response.text();
-  const json = text
-    .split("&")
-    .map((val) => val.split("="))
-    .reduce(
-      (acc: Record<string, string>, [key, val]: string[]) => ({
-        ...acc,
-        [key]: val,
-      }),
-      {}
-    );
-
-  return {
-    statusCode: response.status,
-    headers: {
-      "content-type": "application/json",
-      "access-control-allow-origin": "*",
-    },
-    body: JSON.stringify(json),
+  console.log(JSON.stringify(requestContext.http));
+  const headers = {
+    "access-control-allow-origin": "https://news.ds.io",
+    "access-control-allow-methods": "POST, OPTIONS",
+    "access-control-allow-headers": "content-type",
+    "content-type": "application/json",
   };
+
+  switch (requestContext.http.method) {
+    case "OPTIONS":
+      return { statusCode: 204, headers };
+
+    case "POST":
+      if (!body)
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ message: "Bad Request, no data" }),
+        };
+      const { code = undefined }: { code?: string } = JSON.parse(body);
+      if (!code)
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ message: "Missing code" }),
+        };
+
+      const response = await fetch(
+        "https://github.com/login/oauth/access_token",
+        {
+          method: "POST",
+          body: JSON.stringify({ client_id, client_secret, code }),
+          headers: { "content-type": "application/json" },
+        }
+      );
+
+      const text = await response.text();
+      const json = text
+        .split("&")
+        .map((val) => val.split("="))
+        .reduce(
+          (acc: Record<string, string>, [key, val]: string[]) => ({
+            ...acc,
+            [key]: val,
+          }),
+          {}
+        );
+
+      return {
+        statusCode: response.status,
+        headers,
+        body: JSON.stringify(json),
+      };
+
+    default:
+      return {
+        statusCode: 405,
+        headers,
+        body: JSON.stringify({ message: "Method Not Allowed" }),
+      };
+  }
 };
