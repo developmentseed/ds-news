@@ -13,9 +13,8 @@ const AuthCheck: React.FC<Props> = ({
 }) => {
   // Get code from QueryString
   // TODO: Stop using 'query-string', instead get query from router.location.query in redux
-  const { code, state = "" } = qs.parse(window.location.search);
+  const { code } = qs.parse(window.location.search);
   const authCode = Array.isArray(code) ? code[0] : code;
-  console.log({ state });
 
   // TODO: Mv this logic to Redux Observables
   useEffect(() => {
