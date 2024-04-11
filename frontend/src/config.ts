@@ -12,8 +12,6 @@ const config = {
   },
   paths: {
     feed: "/",
-    login: "/login",
-    about: "/about",
   },
 };
 

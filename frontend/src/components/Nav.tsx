@@ -14,7 +14,7 @@ export const Nav: React.FC<Props> = ({ isLoggedIn, dispatchLogout }) => {
     url: "https://github.com/login/oauth/authorize",
     query: {
       client_id: config.clientId,
-      redirect_uri: `${window.location.origin}${config.basePath}${config.paths.login}`,
+      redirect_uri: `${window.location.origin}${config.basePath}`,
       scope: "repo",
       state: search, // Pass current query params as "state" param
     },

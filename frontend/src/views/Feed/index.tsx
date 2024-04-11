@@ -1,5 +1,4 @@
 import React from "react";
-import { RouteComponentProps } from "react-router";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as actions from "../../store/query/query.actions";
@@ -17,7 +16,7 @@ export const Feed: React.FC<Props> = (props) => (
         setSort={props.dispatchSetSort}
         searchTerm={props.query.search}
         setSearchTerm={props.dispatchSetSearchTerm}
-        isFetching={props.results?.status === 'FETCHING'}
+        isFetching={props.results?.status === "FETCHING"}
         triggerSearch={props.dispatchTriggerSearch}
       />
       {props.results?.status === "FAILED" ? (
@@ -26,7 +25,7 @@ export const Feed: React.FC<Props> = (props) => (
         props.results?.data && (
           <ol className="issues">
             {props.results.data.search.nodes
-              ?.filter(node => Object.entries(node).length !== 0)
+              ?.filter((node) => Object.entries(node).length !== 0)
               .map((node, i) => (
                 <Issue key={i} {...node} />
               ))}
@@ -71,16 +70,16 @@ interface DispatchProps {
   dispatchIgnoreAuthor: typeof actions.ignoreAuthor;
   dispatchUnignoreAuthor: typeof actions.unignoreAuthor;
 }
-interface OwnProps extends RouteComponentProps {}
+interface OwnProps {}
 type Props = StateProps & DispatchProps & OwnProps;
 
 export default connect<StateProps, DispatchProps, OwnProps, RootState>(
   ({ query: { query, results, polling } }) => ({
     query,
     results,
-    polling
+    polling,
   }),
-  dispatch =>
+  (dispatch) =>
     bindActionCreators(
       {
         dispatchSetSearchTerm: actions.setSearchTerm,

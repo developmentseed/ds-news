@@ -3,14 +3,13 @@ import { Provider } from "react-redux";
 import { store, history } from "./store/store";
 import { ConnectedRouter } from "connected-react-router";
 import { PersistGate } from "redux-persist/integration/react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 
 import Nav from "./components/Nav";
-import Login from "./views/Login";
 import Feed from "./views/Feed";
-import About from "./views/About";
 import { persistor } from "./store/store";
 import config from "./config";
+import AuthCheck from "./components/AuthCheck";
 
 const App: React.FC = () => (
   <Provider store={store}>
@@ -19,11 +18,9 @@ const App: React.FC = () => (
         <Router basename={config.basePath}>
           <Nav />
           <div className="container-fluid">
-            <Switch>
-              <Route path={config.paths.login} component={Login} />
-              <Route path={config.paths.about} component={About} />
-              <Route path={config.paths.feed} component={Feed} />
-            </Switch>
+            <AuthCheck>
+              <Feed />
+            </AuthCheck>
           </div>
         </Router>
       </PersistGate>

@@ -33,7 +33,7 @@ const NavFilter: React.FC<Props> = ({
           <input
             placeholder="Search"
             value={searchTerm}
-            className={`form-control text-monospace w-100 ${
+            className={`form-control text-monospace ${
               isFetching ? "loading" : ""
             }`}
             onChange={(e: React.FormEvent<HTMLInputElement>) =>
