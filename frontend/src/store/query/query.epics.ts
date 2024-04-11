@@ -12,16 +12,22 @@ import {
   switchMap,
   switchMapTo,
   takeUntil,
-  takeWhile
+  takeWhile,
 } from "rxjs/operators";
-import { EmptyAction, isActionOf, PayloadAction, RootEpic, RootState } from "typesafe-actions";
+import {
+  EmptyAction,
+  isActionOf,
+  PayloadAction,
+  RootEpic,
+  RootState,
+} from "typesafe-actions";
 import { fetchToken } from "../auth/auth.actions";
 import {
   executeSearch,
   setPollingTimer,
   setQuery,
   startPolling,
-  stopPolling
+  stopPolling,
 } from "./query.actions";
 import { getQueryString } from "./query.selectors";
 import { getQueryFromString } from "./utils";
@@ -45,10 +51,10 @@ const setUrl: RootEpic = (action$, state$, { config }) =>
     filter(queryChanged),
     debounceTime(config.searchDebounceMs), // Without debounce, the app can feel sluggish when each keystroke updates the URL
     map(([_, curState]) => curState.query.query),
-    map(query =>
+    map((query) =>
       replace({
         ...state$.value.router.location,
-        search: `q=${encodeURIComponent(getQueryString(query))}`
+        search: `q=${encodeURIComponent(getQueryString(query))}`,
       })
     )
   );
@@ -67,7 +73,16 @@ const loadFromUrl: RootEpic = (action$, state$, { config }) =>
     map(() =>
       setQuery(
         getQueryFromString(
-          new URLSearchParams(state$.value.router.location.search).toString()
+          // Highly convoluted workflow to remove `code` & `state` from URL
+          new URLSearchParams(
+            Object.fromEntries(
+              Array.from(
+                new URLSearchParams(
+                  state$.value.router.location.search
+                ).entries()
+              ).filter(([k, v]) => !["code", "state"].includes(k))
+            )
+          ).toString()
         )
       )
     )
@@ -122,14 +137,16 @@ const pollQuery: RootEpic = (action$, state$) =>
     switchMapTo(
       timer(0, 1000).pipe(
         // Compute diff between polling time and current counter value
-        map(val => state$.value.query.polling.interval - val),
-        takeWhile(val => val >= 0),
-        flatMap((val) => of(
-          ...([] as (EmptyAction<any> | PayloadAction<any, any>)[])
-            .concat(setPollingTimer(val))
-            // Search when poll counter hits 0
-            .concat(val === 0 ? executeSearch.request() : []),
-        )),
+        map((val) => state$.value.query.polling.interval - val),
+        takeWhile((val) => val >= 0),
+        flatMap((val) =>
+          of(
+            ...([] as (EmptyAction<any> | PayloadAction<any, any>)[])
+              .concat(setPollingTimer(val))
+              // Search when poll counter hits 0
+              .concat(val === 0 ? executeSearch.request() : [])
+          )
+        ),
         takeUntil(action$.pipe(ofType(stopPolling)))
       )
     )
@@ -146,24 +163,25 @@ const executeSearchEpic: RootEpic = (action$, state$, { github, ajax }) =>
     switchMap(() =>
       state$.value.auth.token?.data
         ? from(
-          github.query({
-            query: getQueryString(state$.value.query.query),
-            token: state$.value.auth.token.data
-          })
-        ).pipe(
-          flatMap(response => of(
-            // Emit search response
-            executeSearch.success(response),
-            // Restart polling
-            startPolling()
-          )
-          ),
-          catchError(err =>
-            of(
-              executeSearch.failure(`Failed to query Github: ${err.message}`)
+            github.query({
+              query: getQueryString(state$.value.query.query),
+              token: state$.value.auth.token.data,
+            })
+          ).pipe(
+            flatMap((response) =>
+              of(
+                // Emit search response
+                executeSearch.success(response),
+                // Restart polling
+                startPolling()
+              )
+            ),
+            catchError((err) =>
+              of(
+                executeSearch.failure(`Failed to query Github: ${err.message}`)
+              )
             )
           )
-        )
         : of(executeSearch.failure("You must be logged in to query Github"))
     )
   );
@@ -174,5 +192,5 @@ export const epics = [
   triggerSearchEpic,
   executeSearchEpic,
   pollQuery,
-  rehydrationEpic
+  rehydrationEpic,
 ];

@@ -14,7 +14,6 @@ export const getQueryString = createSelector([getQuery], (queryState) => {
       repo: repo.filter((entry) => !ignoredRepo.includes(entry)),
       author: author.filter((entry) => !ignoredAuthor.includes(entry)),
     })
-      .filter(([key, _]) => !["code", "state"].includes(key))
       // Ignore empty queries
       .filter(([_, value]) => (Array.isArray(value) ? value.length : value))
       // Break array values into array of key + value
