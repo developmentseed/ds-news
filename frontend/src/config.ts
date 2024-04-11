@@ -8,7 +8,7 @@ const config = {
   searchDebounceMs: 300,
   basePath: process.env.PUBLIC_URL,
   api: {
-    auth: `${apiBase}/auth`,
+    auth: apiBase,
   },
   paths: {
     feed: "/",
