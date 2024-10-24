@@ -1,8 +1,8 @@
 import { QueryState } from "./query.reducer";
 
 export const getQueryFromString = (url: string) =>
-  decodeURIComponent(url)
-    .split(" ")
+  decodeURIComponent(url.slice(2))
+    .split("+")
     .map(v => v.split(":"))
     .reduce(
       (acc, v) => ({
