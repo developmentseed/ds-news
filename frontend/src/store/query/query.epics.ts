@@ -75,7 +75,7 @@ const loadFromUrl: RootEpic = (action$, state$, { config }) =>
     map(() =>
       setQuery(
         getQueryFromString(
-          // Highly convoluted workflow to remove `code` & `state` from URL
+          // Remove `code` & `state` from URL
           new URLSearchParams(
             state$.value.router.location.search
           ).get('q') || DEFAULT_QUERY
