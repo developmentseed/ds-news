@@ -32,6 +32,8 @@ import {
 import { getQueryString } from "./query.selectors";
 import { getQueryFromString } from "./utils";
 
+const DEFAULT_QUERY = "sort:updated repo:developmentseed/now repo:developmentseed/how repo:developmentseed/ds-business repo:developmentseed/ds-team repo:developmentseed/operations repo:developmentseed/communications repo:developmentseed/ds-realwork repo:developmentseed/labs repo:developmentseed/ds-projectops repo:developmentseed/ds-devops repo:developmentseed/ds-metrics repo:developmentseed/ds-handbook repo:developmentseed/conferences-events";
+
 const queryChanged = ([prevState, curState]: [RootState, RootState]) =>
   JSON.stringify(prevState.query.query) !==
   JSON.stringify(curState.query.query);
@@ -75,14 +77,8 @@ const loadFromUrl: RootEpic = (action$, state$, { config }) =>
         getQueryFromString(
           // Highly convoluted workflow to remove `code` & `state` from URL
           new URLSearchParams(
-            Object.fromEntries(
-              Array.from(
-                new URLSearchParams(
-                  state$.value.router.location.search
-                ).entries()
-              ).filter(([k, v]) => !["code", "state"].includes(k))
-            )
-          ).toString()
+            state$.value.router.location.search
+          ).get('q') || DEFAULT_QUERY
         )
       )
     )
