@@ -32,7 +32,23 @@ import {
 import { getQueryString } from "./query.selectors";
 import { getQueryFromString } from "./utils";
 
-const DEFAULT_QUERY = "sort:updated repo:developmentseed/now repo:developmentseed/how repo:developmentseed/ds-business repo:developmentseed/ds-team repo:developmentseed/operations repo:developmentseed/communications repo:developmentseed/ds-realwork repo:developmentseed/labs repo:developmentseed/ds-projectops repo:developmentseed/ds-devops repo:developmentseed/ds-metrics repo:developmentseed/ds-handbook repo:developmentseed/conferences-events";
+const DEFAULT_REPOS = [
+  "communications",
+  "conferences-events",
+  "ds-business",
+  "ds-devops",
+  "ds-handbook",
+  "ds-metrics",
+  "ds-projectops",
+  "ds-realwork",
+  "ds-team",
+  "growth",
+  "how",
+  "labs",
+  "now",
+  "operations",
+];
+const DEFAULT_QUERY = ['sort:updated', ...DEFAULT_REPOS.map(r => `repo:developmentseed/${r}`)].join(' ');
 
 const queryChanged = ([prevState, curState]: [RootState, RootState]) =>
   JSON.stringify(prevState.query.query) !==
@@ -159,25 +175,25 @@ const executeSearchEpic: RootEpic = (action$, state$, { github, ajax }) =>
     switchMap(() =>
       state$.value.auth.token?.data
         ? from(
-            github.query({
-              query: getQueryString(state$.value.query.query),
-              token: state$.value.auth.token.data,
-            })
-          ).pipe(
-            flatMap((response) =>
-              of(
-                // Emit search response
-                executeSearch.success(response),
-                // Restart polling
-                startPolling()
-              )
-            ),
-            catchError((err) =>
-              of(
-                executeSearch.failure(`Failed to query Github: ${err.message}`)
-              )
+          github.query({
+            query: getQueryString(state$.value.query.query),
+            token: state$.value.auth.token.data,
+          })
+        ).pipe(
+          flatMap((response) =>
+            of(
+              // Emit search response
+              executeSearch.success(response),
+              // Restart polling
+              startPolling()
+            )
+          ),
+          catchError((err) =>
+            of(
+              executeSearch.failure(`Failed to query Github: ${err.message}`)
             )
           )
+        )
         : of(executeSearch.failure("You must be logged in to query Github"))
     )
   );
