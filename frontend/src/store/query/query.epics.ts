@@ -33,7 +33,8 @@ import { getQueryString } from "./query.selectors";
 import { getQueryFromString } from "./utils";
 import config from "../../config";
 
-const DEFAULT_QUERY = ['sort:updated', ...config.defaultRepos?.map(r => `repo:${r}`)].join(' ');
+const repos_filter = config.defaultRepos?.map(r => `repo:${r}`) || [];
+const DEFAULT_QUERY = ['sort:updated', ...repos_filter].join(' ');
 
 const queryChanged = ([prevState, curState]: [RootState, RootState]) =>
   JSON.stringify(prevState.query.query) !==
