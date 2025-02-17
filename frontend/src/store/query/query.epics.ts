@@ -31,24 +31,9 @@ import {
 } from "./query.actions";
 import { getQueryString } from "./query.selectors";
 import { getQueryFromString } from "./utils";
+import { defaultRepos } from "../../config";
 
-const DEFAULT_REPOS = [
-  "communications",
-  "conferences-events",
-  "ds-business",
-  "ds-devops",
-  "ds-handbook",
-  "ds-metrics",
-  "ds-projectops",
-  "ds-realwork",
-  "ds-team",
-  "growth",
-  "how",
-  "labs",
-  "now",
-  "operations",
-];
-const DEFAULT_QUERY = ['sort:updated', ...DEFAULT_REPOS.map(r => `repo:developmentseed/${r}`)].join(' ');
+const DEFAULT_QUERY = ['sort:updated', ...defaultRepos.map(r => `repo:${r}`)].join(' ');
 
 const queryChanged = ([prevState, curState]: [RootState, RootState]) =>
   JSON.stringify(prevState.query.query) !==

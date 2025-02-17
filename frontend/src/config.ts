@@ -13,6 +13,7 @@ const config = {
   paths: {
     feed: "/",
   },
+  defaultRepos: process.env.REACT_APP_DEFAULT_REPOS?.split(" ")
 };
 
 export default config;
