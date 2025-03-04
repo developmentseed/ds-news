@@ -13,10 +13,7 @@ const config = {
   paths: {
     feed: "/",
   },
-  defaultRepos: process.env.REACT_APP_DEFAULT_REPOS?
-    .split(" ")
-    .flatMap(l => l.split("\n"))
-    .flatMap(l => l.split("\r")) || [],
+  defaultRepos: process.env.REACT_APP_DEFAULT_REPOS?.split(" ").flatMap(l => l.split("\n")).flatMap(l => l.split("\r")) || [],
 };
 
 export default config;
