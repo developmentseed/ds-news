@@ -31,6 +31,7 @@ jobs:
         env:
           REACT_APP_API_URL: ${{ vars.REACT_APP_API_URL }}
           REACT_APP_GH_CLIENT_ID: ${{ vars.GH_CLIENT_ID }}
+          REACT_APP_DEFAULT_REPOS: ${{ vars.REACT_APP_DEFAULT_REPOS }}
         run: |
           npm install
           npm run build
