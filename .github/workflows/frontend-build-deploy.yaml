@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.1
+        uses: actions/checkout@28c7f3d2b5162b5ddd3dfd9a45aa55eaf396478b # v2.3.1
 
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         env:
           cache-name: cache-node-modules
         with:
@@ -38,7 +38,7 @@ jobs:
 
       # NOTE: You must configure your repository to deploy from the branch you push to. To do this, go to your repository settings, click on Pages, and choose Deploy from a Branch from the Source dropdown. From there select the branch you supplied to the action. In most cases this will be gh-pages as that's the default.
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@4.1.5
+        uses: JamesIves/github-pages-deploy-action@0f24da7de3e7e135102609a4c9633b025be8411b # 4.1.5
         with:
           branch: gh-pages # The branch the action should deploy to.
           folder: frontend/build # The folder the action should deploy.
